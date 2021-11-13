@@ -100,26 +100,27 @@ RUN python3 -m pip install pybullet==3.0 pyquaternion -i https://mirrors.aliyun.
     && python -m pip install pybullet==3.0 numpy --upgrade -i https://mirrors.aliyun.com/pypi/simple \
     && python -m pip install scipy open3d \
     && apt update \
-    && apt -y install htop imagemagick
+    && apt -y install htop imagemagick \
+    && mkdir -p /workspace
 
-# Install Sapien dependences.
-RUN wget -qO - https://packages.lunarg.com/lunarg-signing-key-pub.asc | apt-key add - \
-    && wget -qO /etc/apt/sources.list.d/lunarg-vulkan-1.2.170-bionic.list https://packages.lunarg.com/vulkan/1.2.170/lunarg-vulkan-1.2.170-bionic.list \
-    && apt-get update && apt-get install -y vulkan-sdk libglew-dev \
-    && cd /root && git clone https://github.com/assimp/assimp \
-    && cd assimp && git checkout v5.0.1 && mkdir build && cd build \
-    && cmake .. && make -j 8 && make install \
-    && cd /root && rm -rf assimp \
-    && git clone https://github.com/g-truc/glm \
-    && cd glm && git checkout 0.9.9.8 && cp -r glm /usr/local/include \
-    && cd /root && rm -rf glm \
-    && mkdir -p /workspace/sapien_pack && cd /workspace/sapien_pack\
-    && git clone -b v1.8.5 https://github.com/gabime/spdlog \
-    && git clone -b 3.3.3 https://github.com/glfw/glfw \
-    && cd /workspace/sapien_pack/glfw \
-    && mkdir build && cd build && cmake .. && make install -j8\
-    && cd /workspace/sapien_pack/spdlog \
-    && mkdir build && cd build && cmake .. && make install -j8
+## Install Sapien dependences.
+# RUN wget -qO - https://packages.lunarg.com/lunarg-signing-key-pub.asc | apt-key add - \
+#     && wget -qO /etc/apt/sources.list.d/lunarg-vulkan-1.2.170-bionic.list https://packages.lunarg.com/vulkan/1.2.170/lunarg-vulkan-1.2.170-bionic.list \
+#     && apt-get update && apt-get install -y vulkan-sdk libglew-dev \
+#     && cd /root && git clone https://github.com/assimp/assimp \
+#     && cd assimp && git checkout v5.0.1 && mkdir build && cd build \
+#     && cmake .. && make -j 8 && make install \
+#     && cd /root && rm -rf assimp \
+#     && git clone https://github.com/g-truc/glm \
+#     && cd glm && git checkout 0.9.9.8 && cp -r glm /usr/local/include \
+#     && cd /root && rm -rf glm \
+#     && mkdir -p /workspace/sapien_pack && cd /workspace/sapien_pack\
+#     && git clone -b v1.8.5 https://github.com/gabime/spdlog \
+#     && git clone -b 3.3.3 https://github.com/glfw/glfw \
+#     && cd /workspace/sapien_pack/glfw \
+#     && mkdir build && cd build && cmake .. && make install -j8\
+#     && cd /workspace/sapien_pack/spdlog \
+#     && mkdir build && cd build && cmake .. && make install -j8
 
 # For ocrtoc_common.
 RUN cd /workspace && mkdir -p geometry2_ws/src && cd geometry2_ws/src \
@@ -170,17 +171,17 @@ RUN apt -y install libboost-program-options-dev \
     && cd pycolmap && python3 -m pip install . \
     && cd .. && rm -rf pycolmap
 
-# Build Sapien.
-RUN cd /workspace/sapien_pack \
-    && wget -q https://ocrtoc-public.oss-cn-hangzhou.aliyuncs.com/docker/sapien_ros_docker_build_src_2.0.zip \
-    && unzip sapien_ros_docker_build_src_2.0.zip \
-    && mv sapien_ros_docker_build_src_2.0/* . \
-    && rm -rf sapien_ros_docker_build_src_2.0* \
-    && mkdir -p /usr/share/vulkan/icd.d \
-    && cp nvidia_icd.json /usr/share/vulkan/icd.d/nvidia_icd.json \
-    && source /opt/ros/melodic/setup.bash \
-    && cd sapien_ros && python3 setup.py bdist_wheel \
-    && pip3 install dist/sapien_ros1-1.0.0rc2-cp36-cp36m-linux_x86_64.whl
+# # Build Sapien.
+# RUN cd /workspace/sapien_pack \
+#     && wget -q https://ocrtoc-public.oss-cn-hangzhou.aliyuncs.com/docker/sapien_ros_docker_build_src_2.0.zip \
+#     && unzip sapien_ros_docker_build_src_2.0.zip \
+#     && mv sapien_ros_docker_build_src_2.0/* . \
+#     && rm -rf sapien_ros_docker_build_src_2.0* \
+#     && mkdir -p /usr/share/vulkan/icd.d \
+#     && cp nvidia_icd.json /usr/share/vulkan/icd.d/nvidia_icd.json \
+#     && source /opt/ros/melodic/setup.bash \
+#     && cd sapien_ros && python3 setup.py bdist_wheel \
+#     && pip3 install dist/sapien_ros1-1.0.0rc2-cp36-cp36m-linux_x86_64.whl
 
 # Others.
 RUN cd /root \
