@@ -5,6 +5,7 @@ import pdb
 import numpy as np
 import math
 from test_control import *
+from test_get_jacobian import *
 
 
 # from ocrtoc_common.srv import *
@@ -48,7 +49,7 @@ class DesiredTraj:
                 self.x[index], self.y[index], self.z[index], self.theta[index], self.phi[index], self.psi[
                     index] = self.get_instant_pose_circle(t)
         elif self.mode == 'helix':
-            for t in range(self.timespan):
+            for t in range(0, self.timespan, self.delta_t):
                 index = int(t / self.delta_t)
                 self.x[index], self.y[index], self.z[index], self.theta[index], self.phi[index], self.psi[
                     index] = self.get_instant_pose_helix(t)
@@ -57,7 +58,83 @@ class DesiredTraj:
         return np.array([self.x, self.y, self.z, self.theta, self.phi, self.psi])
 
 
+class KineControl:
+    def __init__(self, desired_traj):
+        self.num_joints = 7
+        self.dsr_traj = desired_traj
+        self.Q = np.zeros((self.num_joints, self.dsr_trj))
+        self.dQ = np.zeros((self.num_joints, self.dsr_trj))
+        self.ddQ = np.zeros((self.num_joints, self.dsr_trj))
+        self.TAU = np.zeros((self.num_joints, self.dsr_trj))
+
+        self.q0 = [0, math.pi / 3, 0, math.pi / 6, 0, 0, 0]
+        self.q_dot0 = [0, 0, 0, 0, 0, 0, 0]
+        self.pos0 = self.fk(self.q0)
+
+    def fk(self, q):
+        ...
+        return fk
+
+    def jacobian(self, q):
+        jacobian_matrix = get_jacobian(q)
+        return jacobian_matrix
+
+
+    def control(self):
+        K = 0.5 * np.array([[500, 0], [0, 500]])
+        i = 1
+        dt = 0.001
+        ts = 3
+        # q_r --> record the joint degrees
+        # qd_r --> record the joint velocity
+        q_r = np.zeros([7, 1])
+        qd_r = np.zeros([7, 1])
+        W = np.zeros([1, 1])
+        # e_r --> record the endtip position error
+        e_r = np.zeros([1, 1])
+        # x_r --> record the real joint positions
+        x1_r = np.zeros([7, 1])
+        xtip_r = np.zeros([7, 1])
+
+        # the initial state
+        q = self.q0
+
+        for t in range(0, self.dsr_traj.timespan, self.dsr_traj.delta_t):
+            x_dsr, xd_dsr = self.dsr_traj.get_instant_pose_circle(t)
+
+            # current state
+            q_r = np.append(q_r, q, axis=1)
+            X1, Xtip = self.fk(q)
+            x1_r = np.append(x1_r, X1, axis=1)
+            xtip_r = np.append(xtip_r, Xtip, axis=1)
+
+            # control law
+            e = x_dsr - Xtip
+            J = self.jacobian(q)
+
+            # manupilablity
+            W = np.append(W, np.sqrt(np.linalg.det(J @ J.T)))
+
+            # J_pseu = Jacobian_pseu(J)
+            J_pseu = np.linalg.inv(J)
+
+            qd_r = np.append(qd_r, J_pseu @ (xd_dsr + K @ e), axis=1)
+
+            q = q + np.reshape(qd_r[:, i], (2, 1)) * dt
+
+            # error
+            e_r = np.append(e_r, np.sqrt(e.T @ e))
+            i = i + 1
+
+    def traj_vis(self):
+
+
+
 
 if __name__ == '__main__':
-    Traj = DesiredTraj(0, 0, 0, 'circle', 10, 0.001, 0.1, 10, 10)
-    desired_traj = Traj.get_desired_pose()
+    DsrTraj = DesiredTraj(0, 0, 0, 'circle', 10, 0.001, 0.1, 10, 10)
+    # desired_traj = Traj.get_desired_pose()
+
+    kinecontroller = KineControl(DsrTraj)
+    kinecontroller.control()
+    kinecontroller.traj_vis()

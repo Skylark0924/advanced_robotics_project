@@ -12,6 +12,8 @@ import pdb
 from moveit_msgs.msg import RobotTrajectory
 from trajectory_msgs.msg import JointTrajectory, JointTrajectoryPoint
 import numpy as np
+from moveit_msgs.srv import GetPositionIK, GetPositionIKRequest, GetPositionFK, GetPositionFKRequest
+from moveit_msgs.msg import RobotState, DisplayRobotState, MoveItErrorCodes
 
 
 class ManipulatorInterface(object):
@@ -29,6 +31,9 @@ class ManipulatorInterface(object):
         rospy.Service("get_manipulator_state", ManipulatorState,
                       self.get_manipulator_state_handler)
         rospy.loginfo("get_manipulator_state service is ready.")
+        rospy.Service("get_jacobian", Jacobian, self.get_jacobian_matrix)
+        rospy.loginfo("get_jacobian service is ready.")
+
         rospy.Service("send_joint_space_goal", JointSpaceGoal,
                       self.send_joint_space_goal_handler)
         rospy.loginfo("send_joint_space_goal service is ready.")
@@ -44,7 +49,47 @@ class ManipulatorInterface(object):
         self.end_effector_link = self.move_group.get_end_effector_link()
         self.planning_frame = self.move_group.get_planning_frame()
 
-        # self.get_jacobian_matrix()
+        self.ik = rospy.ServiceProxy("compute_ik", GetPositionIK)
+        self.fk = rospy.ServiceProxy("compute_fk", GetPositionFK)
+        self.pub_state = rospy.Publisher("ik_benchmarks/test_state", DisplayRobotState, queue_size=1)
+
+        self.ik.wait_for_service()
+        self.fk.wait_for_service()
+
+    def test(self, joint_values):
+        print(str(joint_values) + " ")
+        fkr = GetPositionFKRequest()
+        fkr.header.frame_id = self.move_group.get_planning_frame()
+        fkr.fk_link_names = [self.move_group.get_end_effector_link()]
+        fkr.robot_state = self.robot.get_current_state()
+        fkr.robot_state.joint_state.position = list(fkr.robot_state.joint_state.position)
+
+        for (j, v) in zip(self.move_group.get_active_joints(), joint_values):
+            fkr.robot_state.joint_state.position[fkr.robot_state.joint_state.name.index(j)] = v
+
+        target = self.fk(fkr).pose_stamped[0]
+        print(target)
+
+        self.pub_state.publish(DisplayRobotState(state=fkr.robot_state))
+
+        ik_seed = self.robot.get_current_state()
+        ik_seed.joint_state.position = [0.0] * len(ik_seed.joint_state.position)
+        ikr = GetPositionIKRequest()
+        ikr.ik_request.group_name = self.move_group.get_name()
+        ikr.ik_request.robot_state = ik_seed
+        ikr.ik_request.ik_link_name = self.move_group.get_end_effector_link()
+        ikr.ik_request.pose_stamped = target
+        ikr.ik_request.timeout = rospy.Duration(rospy.get_param("~timeout", 6.0))
+        response = self.ik(ikr)
+        if response.error_code.val == MoveItErrorCodes.SUCCESS:
+            print("OK ")
+        else:
+            print("FAILED ")
+
+    def run(self):
+        rospy.loginfo("Running IK reachability tests between ")
+        while not rospy.is_shutdown():
+            self.test(self.move_group.get_random_joint_values())
 
     def print_basic_info(self):
         rospy.loginfo("======= Manipulator information =======")
@@ -68,12 +113,18 @@ class ManipulatorInterface(object):
             self.move_group.get_current_joint_values()
         return response_result
 
-    def get_jacobian_matrix(self):
+    def get_jacobian_matrix(self, request):
+        joint_value = list(request.joint_value)
         current = self.robot.get_group('panda_arm').get_current_joint_values()
-        matrix = np.array(self.robot.get_group('panda_arm').get_jacobian_matrix(current))
-        # self.assertEqual(matrix.shape[0], 6)
-        # self.assertEqual(matrix.shape[1], 6)
+        # pdb.set_trace()
+
+        matrix = np.array(self.robot.get_group('panda_arm').get_jacobian_matrix(joint_value))
         print(matrix)
+        print(np.array(matrix).shape)
+        # pdb.set_trace()
+        response_result = JacobianResponse()
+        response_result.jacobian = matrix.reshape((-1,)).tolist()
+        return response_result
 
     def send_joint_space_goal_handler(self, request):
         rospy.loginfo("Get a joint space goal:")
@@ -95,6 +146,8 @@ class ManipulatorInterface(object):
         # Calling `stop()` ensures that there is no residual movement
         self.move_group.stop()
         rospy.loginfo("Done.")
+        response_result.successed = True
+        response_result.text = "Done."
         return response_result
 
     def send_joint_traj_goal_handler(self, request):
@@ -105,7 +158,6 @@ class ManipulatorInterface(object):
 
         traj_msg = JointTrajectory()
         rt = RobotTrajectory()
-
 
         response_result = JointTrajGoalResponse()
         planned_traj = np.array(request.joint_traj_goal).reshape((-1, 7))
@@ -122,10 +174,11 @@ class ManipulatorInterface(object):
         # pdb.set_trace()
 
         self.move_group.execute(rt)
-
         # Calling `stop()` ensures that there is no residual movement
         self.move_group.stop()
         rospy.loginfo("Done.")
+        response_result.successed = True
+        response_result.text = "Done."
         return response_result
 
     def send_pose_goal_handler(self, request):
