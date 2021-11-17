@@ -16,6 +16,8 @@ python3 setup.py install
 cd ../knn
 python3 setup.py install
 
+pip install panda-robot
+
 # install package for pddlstream
 roscd ocrtoc_planning/scripts/pddlstream
 ./FastDownward/build.py release64

@@ -22,14 +22,15 @@ BOX_ID = 2
 PYBULLET_JOINT_POS_ID = 14
 PYBULLET_JOINT_ORI_ID = 15
 
+
 class ArmControlAction(object):
     _result = control_msgs.msg.FollowJointTrajectoryResult()
 
     def __init__(self, name):
         self._action_name = name
         self._as = actionlib.SimpleActionServer(self._action_name,
-            control_msgs.msg.FollowJointTrajectoryAction,
-            execute_cb=self.execute_cb, auto_start=False)
+                                                control_msgs.msg.FollowJointTrajectoryAction,
+                                                execute_cb=self.execute_cb, auto_start=False)
         self._as.start()
 
     def execute_cb(self, goal):
@@ -56,7 +57,8 @@ class GripperControlAction(object):
 
     def __init__(self, name):
         self._action_name = name
-        self._as = actionlib.SimpleActionServer(self._action_name, control_msgs.msg.GripperCommandAction, execute_cb=self.execute_cb, auto_start=False)
+        self._as = actionlib.SimpleActionServer(self._action_name, control_msgs.msg.GripperCommandAction,
+                                                execute_cb=self.execute_cb, auto_start=False)
         self._as.start()
 
     def execute_cb(self, goal):
@@ -66,16 +68,18 @@ class GripperControlAction(object):
 
         # publish info to the console for the user
         rospy.loginfo('%s: Executing, goal %f' % (self._action_name, goal.command.position))
-        robot.gripperControl(gripper_opening_length=goal.command.position*2, T=1.0)
+        robot.gripperControl(gripper_opening_length=goal.command.position * 2, T=1.0)
 
         if success:
             self._result.position = self._feedback.position
             rospy.loginfo('%s: Succeeded' % self._action_name)
             self._as.set_succeeded(self._result)
 
+
 def kinect_callback(event):
     kinect.updateCameraImage(kinect.getBasePosition(), kinect.getBaseOrientation())
     kinect.ros_publish_image()
+
 
 if __name__ == '__main__':
     rospy.init_node('ros_interface', anonymous=True)
@@ -102,12 +106,12 @@ if __name__ == '__main__':
         if num_robot_joint == 0:
             time.sleep(1)
             continue
-        robot = Manipulator.loadFromID(id = ROBOT_ID, config_path=panda_config_path)
+        robot = Manipulator.loadFromID(id=ROBOT_ID, config_path=panda_config_path)
         robot_loaded_flag = True
     rospy.loginfo('Robot loaded')
 
     # get table
-    table = Box.fromID(id = BOX_ID)
+    table = Box.fromID(id=BOX_ID)
 
     # kinect
     ##### ! The transformation is hardcoded here and it should be consistent with that in panda_arm_hand_realsense.urdf #####
@@ -139,6 +143,7 @@ if __name__ == '__main__':
 
     # joint state
     from sensor_msgs.msg import JointState, CameraInfo, Image
+
     joint_state_publisher = rospy.Publisher('/joint_state_controller/joint_states', JointState, queue_size=10)
     joint_state_publisher_1 = rospy.Publisher('/joint_states', JointState, queue_size=10)
 

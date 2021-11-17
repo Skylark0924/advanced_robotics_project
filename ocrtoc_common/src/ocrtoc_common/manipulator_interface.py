@@ -8,6 +8,11 @@ import moveit_commander
 import moveit_msgs.msg
 
 from ocrtoc_common.srv import *
+import pdb
+from moveit_msgs.msg import RobotTrajectory
+from trajectory_msgs.msg import JointTrajectory, JointTrajectoryPoint
+import numpy as np
+
 
 class ManipulatorInterface(object):
     def __init__(self, group_name):
@@ -16,7 +21,8 @@ class ManipulatorInterface(object):
         self.robot = moveit_commander.RobotCommander()
         self.scene = moveit_commander.PlanningSceneInterface()
         self.move_group = moveit_commander.MoveGroupCommander(group_name)
-
+        self.display_trajectory_publisher = rospy.Publisher('/move_group/display_planned_path',
+                                                            moveit_msgs.msg.DisplayTrajectory)
         rospy.Service("get_manipulator_info", ManipulatorInfo,
                       self.get_manipulator_info_handler)
         rospy.loginfo("get_manipulator_info service is ready.")
@@ -26,6 +32,9 @@ class ManipulatorInterface(object):
         rospy.Service("send_joint_space_goal", JointSpaceGoal,
                       self.send_joint_space_goal_handler)
         rospy.loginfo("send_joint_space_goal service is ready.")
+        rospy.Service("send_joint_traj_goal", JointTrajGoal,
+                      self.send_joint_traj_goal_handler)
+        rospy.loginfo("send_joint_traj_goal service is ready.")
         rospy.Service("send_pose_goal", PoseGoal,
                       self.send_pose_goal_handler)
         rospy.loginfo("send_pose_goal service is ready.")
@@ -34,6 +43,8 @@ class ManipulatorInterface(object):
         self.group_names = self.robot.get_group_names()
         self.end_effector_link = self.move_group.get_end_effector_link()
         self.planning_frame = self.move_group.get_planning_frame()
+
+        # self.get_jacobian_matrix()
 
     def print_basic_info(self):
         rospy.loginfo("======= Manipulator information =======")
@@ -57,16 +68,60 @@ class ManipulatorInterface(object):
             self.move_group.get_current_joint_values()
         return response_result
 
+    def get_jacobian_matrix(self):
+        current = self.robot.get_group('panda_arm').get_current_joint_values()
+        matrix = np.array(self.robot.get_group('panda_arm').get_jacobian_matrix(current))
+        # self.assertEqual(matrix.shape[0], 6)
+        # self.assertEqual(matrix.shape[1], 6)
+        print(matrix)
+
     def send_joint_space_goal_handler(self, request):
         rospy.loginfo("Get a joint space goal:")
         rospy.loginfo(request)
 
         response_result = JointSpaceGoalResponse()
-        response_result.successed = \
-            self.move_group.go(request.joint_goal, wait=True)
-        #self.move_group.set_joint_value_target(request.joint_goal)
-        #traj = self.move_group.plan()
-        #self.move_group.execute(traj)
+        # response_result.successed = \
+        #     self.move_group.go(request.joint_goal, wait=True)
+        self.move_group.set_joint_value_target(request.joint_goal)
+        traj = self.move_group.plan()
+        pdb.set_trace()
+        # display_trajectory = moveit_msgs.msg.DisplayTrajectory()
+        #
+        # display_trajectory.trajectory_start = self.robot.get_current_state()
+        # display_trajectory.trajectory.append(traj)
+        # self.display_trajectory_publisher.publish(display_trajectory)
+        self.move_group.execute(traj)
+
+        # Calling `stop()` ensures that there is no residual movement
+        self.move_group.stop()
+        rospy.loginfo("Done.")
+        return response_result
+
+    def send_joint_traj_goal_handler(self, request):
+        rospy.loginfo("Get a traj goal:")
+        rospy.loginfo(request)
+        # dt = total_time * (1.0 / nb_points)
+        dt = 1
+
+        traj_msg = JointTrajectory()
+        rt = RobotTrajectory()
+
+
+        response_result = JointTrajGoalResponse()
+        planned_traj = np.array(request.joint_traj_goal).reshape((-1, 7))
+
+        for i in range(planned_traj.shape[0]):
+            point = JointTrajectoryPoint()
+            for j in range(planned_traj.shape[1]):
+                point.positions.append(planned_traj[i][j])
+            point.time_from_start = rospy.Duration.from_sec((i + 1) * dt)
+            traj_msg.points.append(point)
+        traj_msg.joint_names = ['panda_joint1', 'panda_joint2', 'panda_joint3', 'panda_joint4', 'panda_joint5',
+                                'panda_joint6', 'panda_joint7']
+        rt.joint_trajectory = traj_msg
+        # pdb.set_trace()
+
+        self.move_group.execute(rt)
 
         # Calling `stop()` ensures that there is no residual movement
         self.move_group.stop()
@@ -79,7 +134,7 @@ class ManipulatorInterface(object):
         self.move_group.clear_pose_targets()
 
         response_result = PoseGoalResponse()
-        #response_result.successed = \
+        # response_result.successed = \
         #    self.move_group.go(request.goal, wait=True)
 
         self.move_group.set_start_state_to_current_state()

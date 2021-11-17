@@ -13,8 +13,8 @@ if __name__ == "__main__":
         print(response)
     except rospy.ServiceException as e:
         print("Service call failed: %s"%e)
-    print()
-    print()
+    # print()
+    # print()
 
     print('='*80)
     rospy.wait_for_service('/get_manipulator_state')
@@ -25,8 +25,8 @@ if __name__ == "__main__":
         print(response)
     except rospy.ServiceException as e:
         print("Service call failed: %s"%e)
-    print()
-    print()
+    # print()
+    # print()
 
     rospy.sleep(2.0)
     request = JointSpaceGoalRequest()
