@@ -3,7 +3,7 @@
 import sys
 
 import rospy
-import geometry_msgs.msg
+from geometry_msgs.msg import PoseStamped
 import moveit_commander
 import moveit_msgs.msg
 
@@ -33,6 +33,10 @@ class ManipulatorInterface(object):
         rospy.loginfo("get_manipulator_state service is ready.")
         rospy.Service("get_jacobian", Jacobian, self.get_jacobian_matrix)
         rospy.loginfo("get_jacobian service is ready.")
+        rospy.Service("get_fk", FK, self.get_fk)
+        rospy.loginfo("get_fk service is ready.")
+        rospy.Service("get_ik", IK, self.get_ik)
+        rospy.loginfo("get_ik service is ready.")
 
         rospy.Service("send_joint_space_goal", JointSpaceGoal,
                       self.send_joint_space_goal_handler)
@@ -56,21 +60,40 @@ class ManipulatorInterface(object):
         self.ik.wait_for_service()
         self.fk.wait_for_service()
 
-    def test(self, joint_values):
-        print(str(joint_values) + " ")
+    def get_fk(self, request):
+        joint_value = request.joint_value
+        print(str(joint_value) + " ")
         fkr = GetPositionFKRequest()
         fkr.header.frame_id = self.move_group.get_planning_frame()
         fkr.fk_link_names = [self.move_group.get_end_effector_link()]
         fkr.robot_state = self.robot.get_current_state()
         fkr.robot_state.joint_state.position = list(fkr.robot_state.joint_state.position)
 
-        for (j, v) in zip(self.move_group.get_active_joints(), joint_values):
+        for (j, v) in zip(self.move_group.get_active_joints(), joint_value):
             fkr.robot_state.joint_state.position[fkr.robot_state.joint_state.name.index(j)] = v
 
-        target = self.fk(fkr).pose_stamped[0]
-        print(target)
+        p = self.fk(fkr).pose_stamped[0].pose
+        pose_value = [p.position.x, p.position.y, p.position.z, p.orientation.x, p.orientation.y, p.orientation.z,
+                      p.orientation.w]
+        # pdb.set_trace()
+        print(pose_value)
 
-        self.pub_state.publish(DisplayRobotState(state=fkr.robot_state))
+        # self.pub_state.publish(DisplayRobotState(state=fkr.robot_state))
+        response = FKResponse()
+        response.pose_value = pose_value
+        return response
+
+    def get_ik(self, request):
+        pose_value = request.pose_value
+        p = PoseStamped()
+        p.pose.position.x = pose_value[0]
+        p.pose.position.y = pose_value[1]
+        p.pose.position.z = pose_value[2]
+        p.pose.orientation.x = pose_value[3]
+        p.pose.orientation.y = pose_value[4]
+        p.pose.orientation.z = pose_value[5]
+        p.pose.orientation.w = pose_value[6]
+        pose_value = p
 
         ik_seed = self.robot.get_current_state()
         ik_seed.joint_state.position = [0.0] * len(ik_seed.joint_state.position)
@@ -78,18 +101,19 @@ class ManipulatorInterface(object):
         ikr.ik_request.group_name = self.move_group.get_name()
         ikr.ik_request.robot_state = ik_seed
         ikr.ik_request.ik_link_name = self.move_group.get_end_effector_link()
-        ikr.ik_request.pose_stamped = target
+        ikr.ik_request.pose_stamped = pose_value
         ikr.ik_request.timeout = rospy.Duration(rospy.get_param("~timeout", 6.0))
-        response = self.ik(ikr)
-        if response.error_code.val == MoveItErrorCodes.SUCCESS:
-            print("OK ")
-        else:
-            print("FAILED ")
+        joint_value = list(self.ik(ikr).solution.joint_state.position)[:7]
+        print(joint_value)
+        response = IKResponse()
+        # pdb.set_trace()
+        response.joint_value = joint_value
+        return response
 
-    def run(self):
-        rospy.loginfo("Running IK reachability tests between ")
-        while not rospy.is_shutdown():
-            self.test(self.move_group.get_random_joint_values())
+    # def run(self):
+    #     rospy.loginfo("Running IK reachability tests between ")
+    #     while not rospy.is_shutdown():
+    #         self.test(self.move_group.get_random_joint_values())
 
     def print_basic_info(self):
         rospy.loginfo("======= Manipulator information =======")
@@ -115,7 +139,7 @@ class ManipulatorInterface(object):
 
     def get_jacobian_matrix(self, request):
         joint_value = list(request.joint_value)
-        current = self.robot.get_group('panda_arm').get_current_joint_values()
+        # current = self.robot.get_group('panda_arm').get_current_joint_values()
         # pdb.set_trace()
 
         matrix = np.array(self.robot.get_group('panda_arm').get_jacobian_matrix(joint_value))
@@ -135,7 +159,7 @@ class ManipulatorInterface(object):
         #     self.move_group.go(request.joint_goal, wait=True)
         self.move_group.set_joint_value_target(request.joint_goal)
         traj = self.move_group.plan()
-        pdb.set_trace()
+        # pdb.set_trace()
         # display_trajectory = moveit_msgs.msg.DisplayTrajectory()
         #
         # display_trajectory.trajectory_start = self.robot.get_current_state()

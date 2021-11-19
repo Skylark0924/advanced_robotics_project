@@ -79,7 +79,7 @@ def execute_joint_goal(joint_goal):
 def execute_joint_traj_goal(joint_traj_goal):
     # rospy.sleep(2.0)
     start_joint_state = get_manipulator_state().joint_position_list
-    joint_traj_goal = list(start_joint_state) + joint_traj_goal
+    joint_traj_goal = list(start_joint_state) + list(joint_traj_goal)
     # pdb.set_trace()
 
     request = JointTrajGoalRequest()
@@ -120,15 +120,20 @@ if __name__ == "__main__":
     get_manipulator_info()
     get_manipulator_state()
 
-    joint_goal_lst = []
-    for i in range(10):
-        a = [0.48 + i / 10.0, -0.22, -0.19, -2.41, -0.645, 1.51, 0.08]
-        joint_goal_lst.append(a)
-
-    joint_goal_lst = np.array(joint_goal_lst).reshape((-1, )).tolist()
-
-    execute_joint_traj_goal(joint_goal_lst)
+    # joint_goal_lst = []
+    # for i in range(10):
+    #     a = [0.48 + i / 10.0, -0.22, -0.19, -2.41, -0.645, 1.51, 0.08]
+    #     joint_goal_lst.append(a)
+    #
+    # joint_goal_lst = np.array(joint_goal_lst).reshape((-1, )).tolist()
+    #
+    # execute_joint_traj_goal(joint_goal_lst)
 
     # pose_goal = [-0.343232254619, -0.525294298568, 0.488844847508, -0.332872961262, 0.623855146947, 0.334828632737,
-    #              0.622808264226]
-    # execute_ee_pose_goal(pose_goal)
+    # 0.622808264226]
+
+    a = [2.89729998, -1.04693991, -0.60678114, -1.37532981, -2.15888884, 0.55902705,
+         0.2286122]
+    b = [0.88, -0.22, -0.19, -1.41, -0.645, 1.51, 0.08]
+
+    execute_joint_goal(b)

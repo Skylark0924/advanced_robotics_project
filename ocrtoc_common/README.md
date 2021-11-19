@@ -73,7 +73,7 @@ roslaunch panda_moveit_config ocrtoc.launch
 
 3. start ManipulatorInterface (python2)
 ```
-rosrun ocrtoc_common manipulator_inrface_node.py
+rosrun ocrtoc_common manipulator_interface_node.py
 ```
 
 4. Call ManipulatorInterface (both python2 python3, communicate through rosservice)

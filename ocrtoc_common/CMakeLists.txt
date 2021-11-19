@@ -12,6 +12,8 @@ catkin_python_setup()
 
 add_service_files(
   FILES
+  FK.srv
+  IK.srv
   Jacobian.srv
   JointSpaceGoal.srv
   JointTrajGoal.srv
