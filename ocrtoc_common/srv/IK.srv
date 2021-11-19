@@ -1,0 +1,3 @@
+float64[] pose_value
+---
+float64[] joint_value

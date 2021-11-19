@@ -49,7 +49,7 @@ def get_manipulator_state():
               w: 0.41790612233519464
         joint_position_list: [1.379531790886312, -0.22001797639057735, -0.19007410841535446, -2.4099934193045796, -0.6449946037573167, 1.5100918667436882, 0.07997906447997524]
     """
-    print('=' * 80)
+    # print('=' * 80)
     rospy.wait_for_service('/get_manipulator_state')
     try:
         service_call = rospy.ServiceProxy('/get_manipulator_state', ManipulatorState)
@@ -65,7 +65,7 @@ def execute_joint_goal(joint_goal):
     # rospy.sleep(2.0)
     request = JointSpaceGoalRequest()
     request.joint_goal = joint_goal
-    print('=' * 80)
+    # print('=' * 80)
     print(request.joint_goal)
     rospy.wait_for_service('/send_joint_space_goal')
     try:
@@ -79,12 +79,12 @@ def execute_joint_goal(joint_goal):
 def execute_joint_traj_goal(joint_traj_goal):
     # rospy.sleep(2.0)
     start_joint_state = get_manipulator_state().joint_position_list
-    joint_traj_goal = list(start_joint_state) + joint_traj_goal
+    joint_traj_goal = list(start_joint_state) + list(joint_traj_goal)
     # pdb.set_trace()
 
     request = JointTrajGoalRequest()
     request.joint_traj_goal = joint_traj_goal
-    print('=' * 80)
+    # print('=' * 80)
     print(request.joint_traj_goal)
     rospy.wait_for_service('/send_joint_traj_goal')
     try:
@@ -105,7 +105,6 @@ def execute_ee_pose_goal(pose_goal):
     request.goal.orientation.y = pose_goal[4]
     request.goal.orientation.z = pose_goal[5]
     request.goal.orientation.w = pose_goal[6]
-    print('=' * 80)
     print(request.goal)
     rospy.wait_for_service('/send_pose_goal')
     try:
@@ -120,15 +119,20 @@ if __name__ == "__main__":
     get_manipulator_info()
     get_manipulator_state()
 
-    joint_goal_lst = []
-    for i in range(10):
-        a = [0.48 + i / 10.0, -0.22, -0.19, -2.41, -0.645, 1.51, 0.08]
-        joint_goal_lst.append(a)
-
-    joint_goal_lst = np.array(joint_goal_lst).reshape((-1, )).tolist()
-
-    execute_joint_traj_goal(joint_goal_lst)
+    # joint_goal_lst = []
+    # for i in range(10):
+    #     a = [0.48 + i / 10.0, -0.22, -0.19, -2.41, -0.645, 1.51, 0.08]
+    #     joint_goal_lst.append(a)
+    #
+    # joint_goal_lst = np.array(joint_goal_lst).reshape((-1, )).tolist()
+    #
+    # execute_joint_traj_goal(joint_goal_lst)
 
     # pose_goal = [-0.343232254619, -0.525294298568, 0.488844847508, -0.332872961262, 0.623855146947, 0.334828632737,
-    #              0.622808264226]
-    # execute_ee_pose_goal(pose_goal)
+    # 0.622808264226]
+
+    a = [2.89729998, -1.04693991, -0.60678114, -1.37532981, -2.15888884, 0.55902705,
+         0.2286122]
+    b = [0.88, -0.22, -0.19, -1.41, -0.645, 1.51, 0.08]
+
+    execute_joint_goal(b)

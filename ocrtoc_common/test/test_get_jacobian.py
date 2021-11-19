@@ -28,7 +28,7 @@ def get_jacobian(joint_value):
               w: 0.41790612233519464
         joint_position_list: [1.379531790886312, -0.22001797639057735, -0.19007410841535446, -2.4099934193045796, -0.6449946037573167, 1.5100918667436882, 0.07997906447997524]
     """
-    print('=' * 80)
+    # print('=' * 80)
     rospy.wait_for_service('/get_jacobian')
     try:
         service_call = rospy.ServiceProxy('/get_jacobian', Jacobian)
