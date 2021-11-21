@@ -224,7 +224,7 @@ You may find a `motion planning` plugins is shown in the `rviz`, which is a moti
 
 ### Requirement
 
-In this project, you are required to implement a kinematic control on a 7-DOF [Franka Panda](https://frankaemika.github.io/docs/) robot to track a desired trajectory.
+**In this project, you are required to implement a kinematic control on a 7-DOF [Franka Panda](https://frankaemika.github.io/docs/) robot to track a desired trajectory.**
 
 
 
