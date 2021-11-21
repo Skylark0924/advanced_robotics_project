@@ -71,7 +71,7 @@ In order for your solution to be executable on your local machine, I provide you
 
 
 
-## Simulation installation
+## Simulator installation
 
 ### Clone the Repository
 
