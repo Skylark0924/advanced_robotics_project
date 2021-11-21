@@ -220,6 +220,55 @@ You may find a `motion planning` plugins is shown in the `rviz`, which is a moti
 
 
 
+## Project
+
+### Requirement
+
+In this project, you are required to implement a kinematic control on a 7-DOF [Franka Panda](https://frankaemika.github.io/docs/) robot to track a desired trajectory.
+
+
+
+### DH parameter of Panda robot
+
+The Denavit–Hartenberg parameters of this robot are given as follows:
+
+![_images/dh-diagram.png](docs/dh-diagram.png)
+
+![image-20211121214314827](docs/image-20211121214314827.png)
+
+
+
+### Program and test your solution
+
+Though there are a mass of scripts in this project, the only one you need to consider and modify is `ocrtoc_common/test/trajectory_tracking.py`. 
+
+```
+# Jump to the path of your solution
+roscd ocrtoc_common/test
+
+# Plot the desired traj in rviz (python2)
+python test_dsr_traj_vis.py
+
+# Run your solution (python3)
+python3 trajectory_tracking.py
+```
+
+> **Notice:** Every time you try to test your code, please make sure the three terminals mentioned in the **Step11** is running normally! Otherwise, you will receive a plenty of errors.
+
+
+
+### Criteria
+
+1. **(20%)** Finish the forward kinematic function `def fk(self, q)`;
+2. **(20%)** Finish the Jacobian function `def jacobian(self, q)`;
+3. **(55%)** Finish the kinematic control function `def control(self);
+4. **(5%)** Plot your results as I mentioned in the `def traj_vis(self)` ;
+5. **Bonus (+10%)** Take your code and come to Academic Building 1 (2F) to test your code on the real Panda robot.
+
+**Please submit your `trajectory_tracking.py` and a document which contains your result figures.**
+
+
+
 ## Trouble shooting
 
 If you have any question about this project, please try to learn and use the `issues` in Github to ask your questions so that I can reply in time and let other students who encounter the same problem know the solution at the same time.
