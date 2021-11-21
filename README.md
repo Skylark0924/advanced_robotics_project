@@ -313,5 +313,19 @@ If you have any question about this project, please try to learn and use the `is
 
    
 
+### How to deal with the version update?
 
+If there are some issues in this repository, I will fix it and notify you via email. You don not need to execute Step1~Step10 again, the only two things you need to do is to pull the modification and execute **Step10** to renew your environment.
+
+```
+# In your repo path
+git pull  # you might face a merge alert, handle it yourself
+
+# Enter the docker container
+bash tools/exec_container.sh
+
+## In the docker image
+cd /root/ocrtoc_ws/src/tools
+bash setup_env.sh
+```
 
