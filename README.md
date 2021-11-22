@@ -56,7 +56,7 @@ Junjia Liu
 
 **Step 1:** Since this project requires Docker and Ubuntu environment, and if you are just using a Windows PC, I highly recommend you install a virtual machine in your Windows as your first step. The virtual machine I recommend is [vmware](https://www.vmware.com/products/workstation-pro.html).
 
-> **Notice:** You need to give a large space to the virtual machine (> 50G), otherwise the space will not enough for pulling the docker image.
+> **Notice:** You need to give a large space to the virtual machine (> 30G), otherwise the space will not enough for pulling the docker image.
 
 
 
