@@ -266,13 +266,13 @@ You may find a `motion planning` plugins is shown in the `rviz`, which is a moti
 
 **Demo**
 
-![_images/dh-diagram.png](docs/final2.gif)****
+![demo](docs/final2.gif)
 
 ### DH parameter of Panda robot
 
 The Denavit–Hartenberg parameters of this robot are given as follows:
 
-![_images/dh-diagram.png](docs/dh-diagram.png)
+![coor](docs/dh-diagram.png)
 
 ![image-20211121214314827](docs/image-20211121214314827.png)
 
