@@ -24,6 +24,8 @@
 
 
 
+---
+
 Hi all, 
 
 Congratulations on getting into the most interesting part of this course! You could use what you have learnt in class to complete a real robot manipulation task, and this is also the chance to check whether you have understand those knowledge. Maybe you'll be interested in robotics through this practical project, then welcome to join us and do something that changes the world! So why still hesitate? Take action now!
@@ -37,8 +39,6 @@ Junjia Liu
 ## Update
 
 1. 2021.11.22 - **Some students told me that they do not have a computer with a Nvidia GPU. So, I tried to remove Nvidia's dependence from the docker file. However, I found that the Pybullet simulator is mainly rely on the OpenGL, which has to require a Nvidia driver.** 
-2. 2021.11.22 - If you have any question about this project, please try to learn and use the `issues` in Github to ask your questions so that I can reply in time and let other students who encounter the same problem know the solution at the same time.
-![image-20211121165337801](docs/image-20211121165337801.png)
 
 ---
 
@@ -304,6 +304,10 @@ python3 trajectory_tracking.py
 
 
 ## Trouble shooting
+
+If you have any question about this project, please try to learn and use the `issues` in Github to ask your questions so that I can reply in time and let other students who encounter the same problem know the solution at the same time.
+
+![image-20211121165337801](docs/image-20211121165337801.png)
 
 
 
