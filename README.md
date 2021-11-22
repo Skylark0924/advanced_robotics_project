@@ -24,7 +24,6 @@
     * [How to deal with the version update?](#how-to-deal-with-the-version-update)
 
 
-
 ---
 
 Hi all, 
@@ -265,7 +264,9 @@ You may find a `motion planning` plugins is shown in the `rviz`, which is a moti
 
 **In this project, you are required to implement a kinematic control on a 7-DOF [Franka Panda](https://frankaemika.github.io/docs/) robot to track a desired trajectory.**
 
+**Demo**
 
+![_images/dh-diagram.png](docs/final2.gif)****
 
 ### DH parameter of Panda robot
 
@@ -304,7 +305,7 @@ python3 trajectory_tracking.py
 4. **(5%)** Plot your results as I mentioned in the `def traj_vis(self)` ;
 5. **Bonus (+10%)** Take your code and come to Academic Building 1 (2F) to test your code on the real Panda robot.
 
-**Please submit your `trajectory_tracking.py` and a document which contains your result figures.**
+**Please submit your `trajectory_tracking.py` and a document which contains your result figures. The deadline is behind the final exam.**
 
 
 

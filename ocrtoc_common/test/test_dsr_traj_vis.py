@@ -19,7 +19,7 @@ def DataUpdating(path_pub, path_record):
     vx = 0.5
     vy = 0
     vz = 0.5
-    vth = 9
+    vth = 7
     # delta_x = (vx * math.cos(th) - vy * math.sin(th)) * dt
     # delta_y = (vx * math.sin(th) + vy * math.cos(th)) * dt
     delta_y = (vy * math.cos(th) - vz * math.sin(th)) * dt
@@ -31,7 +31,7 @@ def DataUpdating(path_pub, path_record):
     z += delta_z
     th += delta_th
 
-    quat = tf.transformations.quaternion_from_euler(0, 0, th)
+    quat = tf.transformations.quaternion_from_euler(0, 0, 0)
 
     pose = PoseStamped()
     pose.header.stamp = current_time

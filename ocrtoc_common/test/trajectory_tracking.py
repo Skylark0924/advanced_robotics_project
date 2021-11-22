@@ -29,7 +29,7 @@ class DesiredTraj:
         self.zt += delta_z
         self.thetat += delta_th
 
-        traj_t = np.array([self.xt, self.yt, self.zt, self.thetat, self.phit, self.psit])
+        traj_t = np.array([self.xt, self.yt, self.zt, 0, 0, 0])
         trajd_t = np.array([0, 0, 0, 0, 0, 0])
         return traj_t, trajd_t
 

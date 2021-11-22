@@ -6,3 +6,5 @@
 # SAPIEN cache file
 *.convex.stl
 
+
+ocrtoc_common/test/test_trajectory_tracking.py
