@@ -1,13 +1,13 @@
-from nvidia/cudagl:11.2.1-devel-ubuntu18.04
+#from nvidia/cudagl:11.2.1-devel-ubuntu18.04
 
 ENV TZ=Asia/Shanghai
-ENV NVIDIA_VISIBLE_DEVICES all
-ENV NVIDIA_DRIVER_CAPABILITIES graphics,utility,compute
+#ENV NVIDIA_VISIBLE_DEVICES all
+#ENV NVIDIA_DRIVER_CAPABILITIES graphics,utility,compute
 
 # Install Ubuntu tools.
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone \
-    && rm /etc/apt/sources.list.d/cuda.list \
-    && rm /etc/apt/sources.list.d/nvidia-ml.list \
+#    && rm /etc/apt/sources.list.d/cuda.list \
+#    && rm /etc/apt/sources.list.d/nvidia-ml.list \
     && apt-get update \
     && apt-get install -y build-essential git libssl-dev \
         lsb-release iputils-ping manpages-dev net-tools \
@@ -138,38 +138,38 @@ RUN cd /workspace && mkdir -p geometry2_ws/src && cd geometry2_ws/src \
     && cd devel/lib/python3/dist-packages \
     && cp -r * /usr/local/lib/python3.6/dist-packages/
 
-# For perception.
-RUN python3 -m pip install pip --upgrade \
-    && python3 -m pip install scikit-build Cython \
-    && python3 -m pip install matplotlib graspnetAPI \
-        open3d==0.12.0.0 open3d-plus tensorboard==2.3 \
-        pyrealsense2 pyrender trimesh plyfile scikit-learn pytz \
-    && python3 -m pip install imageio==2.5.0 pypng==0.0.19 PyOpenGL==3.1.0 \
-        triangle==20190115.2 glumpy==1.1.0 \
-        Pillow==7.2.0 rtree -i https://mirrors.aliyun.com/pypi/simple \
-    && python3 -m pip install torch==1.8.2+cu111 torchvision==0.9.2+cu111 \
-    -f https://download.pytorch.org/whl/lts/1.8/torch_lts.html
+## For perception.
+#RUN python3 -m pip install pip --upgrade \
+#    && python3 -m pip install scikit-build Cython \
+#    && python3 -m pip install matplotlib graspnetAPI \
+#        open3d==0.12.0.0 open3d-plus tensorboard==2.3 \
+#        pyrealsense2 pyrender trimesh plyfile scikit-learn pytz \
+#    && python3 -m pip install imageio==2.5.0 pypng==0.0.19 PyOpenGL==3.1.0 \
+#        triangle==20190115.2 glumpy==1.1.0 \
+#        Pillow==7.2.0 rtree -i https://mirrors.aliyun.com/pypi/simple \
+#    && python3 -m pip install torch==1.8.2+cu111 torchvision==0.9.2+cu111 \
+#    -f https://download.pytorch.org/whl/lts/1.8/torch_lts.html
 
-# For perception.
-RUN apt -y install libboost-program-options-dev \
-    libboost-filesystem-dev libboost-graph-dev libboost-system-dev \
-    libboost-test-dev libeigen3-dev libsuitesparse-dev libfreeimage-dev \
-    libgoogle-glog-dev libgflags-dev qtbase5-dev libqt5opengl5-dev \
-    libcgal-dev libcgal-qt5-dev libatlas-base-dev libsuitesparse-dev \
-    && git clone https://ceres-solver.googlesource.com/ceres-solver \
-    && cd ceres-solver && git checkout $(git describe --tags) \
-    && mkdir build && cd build \
-    && cmake .. -DBUILD_TESTING=OFF -DBUILD_EXAMPLES=OFF \
-    && make -j8 && make install \
-    && cd ../.. && rm -rf ceres-solver \
-    && git clone https://github.com/colmap/colmap \
-    && cd colmap && git checkout dev \
-    && mkdir build && cd build \
-    && cmake .. -DCMAKE_C_COMPILER=/usr/bin/gcc-7 && make -j8 && make install \
-    && cd ../.. && rm -rf colmap \
-    && git clone --recursive https://github.com/mihaidusmanu/pycolmap.git \
-    && cd pycolmap && python3 -m pip install . \
-    && cd .. && rm -rf pycolmap
+## For perception.
+#RUN apt -y install libboost-program-options-dev \
+#    libboost-filesystem-dev libboost-graph-dev libboost-system-dev \
+#    libboost-test-dev libeigen3-dev libsuitesparse-dev libfreeimage-dev \
+#    libgoogle-glog-dev libgflags-dev qtbase5-dev libqt5opengl5-dev \
+#    libcgal-dev libcgal-qt5-dev libatlas-base-dev libsuitesparse-dev \
+#    && git clone https://ceres-solver.googlesource.com/ceres-solver \
+#    && cd ceres-solver && git checkout $(git describe --tags) \
+#    && mkdir build && cd build \
+#    && cmake .. -DBUILD_TESTING=OFF -DBUILD_EXAMPLES=OFF \
+#    && make -j8 && make install \
+#    && cd ../.. && rm -rf ceres-solver \
+#    && git clone https://github.com/colmap/colmap \
+#    && cd colmap && git checkout dev \
+#    && mkdir build && cd build \
+#    && cmake .. -DCMAKE_C_COMPILER=/usr/bin/gcc-7 && make -j8 && make install \
+#    && cd ../.. && rm -rf colmap \
+#    && git clone --recursive https://github.com/mihaidusmanu/pycolmap.git \
+#    && cd pycolmap && python3 -m pip install . \
+#    && cd .. && rm -rf pycolmap
 
 # # Build Sapien.
 # RUN cd /workspace/sapien_pack \
