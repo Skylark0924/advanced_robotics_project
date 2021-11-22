@@ -1,6 +1,28 @@
 # Final project
 
-[TOC]
+* [Final project](#final-project)
+  * [Update](#update)
+  * [Foundations](#foundations)
+    * [Ubuntu virtual machine](#ubuntu-virtual-machine)
+    * [Ubuntu](#ubuntu)
+    * [How to use Github to keep tracking the change of code version?](#how-to-use-github-to-keep-tracking-the-change-of-code-version)
+    * [Docker](#docker)
+  * [Set up your Environment](#set-up-your-environment)
+  * [Simulator installation](#simulator-installation)
+    * [Clone the Repository](#clone-the-repository)
+    * [Set up Docker](#set-up-docker)
+    * [Start Docker](#start-docker)
+    * [Set up Environment inside the Docker Container](#set-up-environment-inside-the-docker-container)
+  * [Explore the simulator](#explore-the-simulator)
+  * [Project](#project)
+    * [Requirement](#requirement)
+    * [DH parameter of Panda robot](#dh-parameter-of-panda-robot)
+    * [Program and test your solution](#program-and-test-your-solution)
+    * [Criteria](#criteria)
+  * [Trouble shooting](#trouble-shooting)
+    * [How to deal with the version update?](#how-to-deal-with-the-version-update)
+
+
 
 Hi all, 
 
