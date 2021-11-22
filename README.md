@@ -343,7 +343,24 @@ python3 trajectory_tracking.py
    bash tools/exec_container.sh
    ```
 
-   
+### How to reboot the docker
+You must believe that some bugs can be fixed by just reboot the system. So, how can you reboot the Docker?
+```
+# In the docker image
+exit
+
+# Out of the docker
+docker ps -a
+## It will output a list of containers, find the one the 'IMAGE' is 'ocrtoc_pb_g:v1' and copy its 'CONTAINER ID'
+
+docker stop [CONTAINER_ID_YOU_COPY]
+
+# Out of the docker
+cd [YOUR_REPO_PATH]
+bash tools/start_container.sh
+
+bash tools/exec_container.sh
+```
 
 ### How to deal with the version update?
 
