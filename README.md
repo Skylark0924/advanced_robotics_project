@@ -10,6 +10,16 @@ Junjia Liu
 
 
 
+---
+
+## Update
+
+1. 2021.11.22 - **Some students told me that they do not have a computer with a Nvidia GPU. So, I tried to remove Nvidia's dependence from the docker file. However, I found that the Pybullet simulator is mainly rely on the OpenGL, which requires a Nvidia driver.** 
+
+---
+
+
+
 ## Foundations
 
 > **Notice:** If you are familiar with git, Github, Docker, Linux, virtual machine, you can skip this chapter and start from the second chapter *Set up your Environment*.
