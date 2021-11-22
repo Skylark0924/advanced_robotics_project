@@ -1,4 +1,4 @@
-#from nvidia/cudagl:11.2.1-devel-ubuntu18.04
+from ubuntu:18.04
 
 ENV TZ=Asia/Shanghai
 #ENV NVIDIA_VISIBLE_DEVICES all
