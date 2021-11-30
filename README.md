@@ -148,19 +148,6 @@ git submodule update --init --recursive
   cd docker
   bash build.sh ocrtoc_pb_g:v1
   ```
-
-- Option 2: Pull the pre-built docker image from either of the following sources:
-
-  ```
-  docker pull registry.cn-hangzhou.aliyuncs.com/ocrtoc2021/release:2.1
-  ```
-
-  or
-
-  ```
-  docker pull registry.us-west-1.aliyuncs.com/ocrtoc2021/release:2.1
-  ```
-
   
 
 ### Start Docker
@@ -319,7 +306,7 @@ python3 trajectory_tracking.py
 
 2. If you cannot find anything in `\root\ocrtoc_ws\src`, it probably be the mistake in `tools\create_container.sh`. You need to modify the **name** and **path** in the scripts according to your own needs. 
 
-   So you need to modify `$HOME/OCRTOC_software_package:/root/ocrtoc_ws/src` -> `<your absolute path of the OCRTOC_Software_package directory>:/root/ocrtoc_ws/src`.
+   So you need to modify `$HOME/OCRTOC_software_package:/root/ocrtoc_ws/src` -> `<your absolute path of the OCRTOC_Software_package directory>:/root/ocrtoc_ws/src`. (See https://github.com/Skylark0924/advanced_robotics_project/issues/2#issuecomment-982435631 for detail)
 
 
 3. When you run `rosrun ocrtoc_common manipulator_interface_node.py` and get an error like this:
