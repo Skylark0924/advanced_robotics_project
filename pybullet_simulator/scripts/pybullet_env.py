@@ -1,3 +1,4 @@
+import pdb
 import time
 import numpy as np
 import pybullet
@@ -5,71 +6,86 @@ import pybullet_data
 import math
 import cv2
 
+
 class Floor:
-    def __init__(self, basePosition=[0,0,0], baseRPY=[0,0,0]):
+    def __init__(self, basePosition=[0, 0, 0], baseRPY=[0, 0, 0]):
         pybullet.setAdditionalSearchPath(pybullet_data.getDataPath())
-        self.id = pybullet.loadURDF('plane.urdf', basePosition=basePosition, baseOrientation=pybullet.getQuaternionFromEuler(baseRPY))
+        self.id = pybullet.loadURDF('plane.urdf', basePosition=basePosition,
+                                    baseOrientation=pybullet.getQuaternionFromEuler(baseRPY))
 
     def changeFriction(self, lateralFriction=1.0, spinningFriction=1.0):
-        pybullet.changeDynamics(bodyUniqueId=self.id, linkIndex=-1, lateralFriction=lateralFriction, spinningFriction=spinningFriction)
+        pybullet.changeDynamics(bodyUniqueId=self.id, linkIndex=-1, lateralFriction=lateralFriction,
+                                spinningFriction=spinningFriction)
         print("Floor friction updated!")
         print("lateralFriction:", pybullet.getDynamicsInfo(self.id, -1)[1])
         print("spinningFriction:", pybullet.getDynamicsInfo(self.id, -1)[7])
 
-class VisualSphere:
-    def __init__(self, basePosition=[0,0,0], baseRPY=[0,0,0], radius=0.1, rgbaColor=[1,0,0,0.6]):
-        visualShapeId = pybullet.createVisualShape(shapeType=pybullet.GEOM_SPHERE, radius=radius, rgbaColor=rgbaColor)
-        self.objectUniqueId = pybullet.createMultiBody(baseVisualShapeIndex=visualShapeId, basePosition=basePosition, baseOrientation=pybullet.getQuaternionFromEuler(baseRPY))
 
-    def resetPosition(self, position, quaternion=[0,0,0,1]):
+class VisualSphere:
+    def __init__(self, basePosition=[0, 0, 0], baseRPY=[0, 0, 0], radius=0.1, rgbaColor=[1, 0, 0, 0.6]):
+        visualShapeId = pybullet.createVisualShape(shapeType=pybullet.GEOM_SPHERE, radius=radius, rgbaColor=rgbaColor)
+        self.objectUniqueId = pybullet.createMultiBody(baseVisualShapeIndex=visualShapeId, basePosition=basePosition,
+                                                       baseOrientation=pybullet.getQuaternionFromEuler(baseRPY))
+
+    def resetPosition(self, position, quaternion=[0, 0, 0, 1]):
         pybullet.resetBasePositionAndOrientation(self.objectUniqueId, position, quaternion)
 
     def remove(self):
         pybullet.removeBody(self.objectUniqueId)
+
 
 class VisualBox:
-    def __init__(self, basePosition=[0,0,1], baseRPY=[0,0,0], size=[1,1,1], rgbaColor=[1,0,0,0.6]):
-        visualShapeId = pybullet.createVisualShape(shapeType=pybullet.GEOM_BOX, halfExtents=np.array(size)/2, rgbaColor=rgbaColor)
-        self.objectUniqueId = pybullet.createMultiBody(baseVisualShapeIndex=visualShapeId, basePosition=basePosition, baseOrientation=pybullet.getQuaternionFromEuler(baseRPY))
+    def __init__(self, basePosition=[0, 0, 1], baseRPY=[0, 0, 0], size=[1, 1, 1], rgbaColor=[1, 0, 0, 0.6]):
+        visualShapeId = pybullet.createVisualShape(shapeType=pybullet.GEOM_BOX, halfExtents=np.array(size) / 2,
+                                                   rgbaColor=rgbaColor)
+        self.objectUniqueId = pybullet.createMultiBody(baseVisualShapeIndex=visualShapeId, basePosition=basePosition,
+                                                       baseOrientation=pybullet.getQuaternionFromEuler(baseRPY))
 
-    def resetBasePosition(self, position, quaternion=[0,0,0,1]):
+    def resetBasePosition(self, position, quaternion=[0, 0, 0, 1]):
         pybullet.resetBasePositionAndOrientation(self.objectUniqueId, position, quaternion)
 
     def remove(self):
         pybullet.removeBody(self.objectUniqueId)
+
 
 class Sphere:
-    def __init__(self, basePosition=[0,0,1], baseRPY=[0,0,0], radius=0.1, mass=1, rgbaColor=[1,0,0,1]):
-        collisionShapeIndex = pybullet.createCollisionShape(shapeType=pybullet.GEOM_SPHERE, radius=radius,)
-        visualShapeIndex = pybullet.createVisualShape(shapeType=pybullet.GEOM_SPHERE, radius=radius, rgbaColor=rgbaColor)
+    def __init__(self, basePosition=[0, 0, 1], baseRPY=[0, 0, 0], radius=0.1, mass=1, rgbaColor=[1, 0, 0, 1]):
+        collisionShapeIndex = pybullet.createCollisionShape(shapeType=pybullet.GEOM_SPHERE, radius=radius, )
+        visualShapeIndex = pybullet.createVisualShape(shapeType=pybullet.GEOM_SPHERE, radius=radius,
+                                                      rgbaColor=rgbaColor)
         self.objectUniqueId = pybullet.createMultiBody(baseMass=mass,
-                                           baseCollisionShapeIndex=collisionShapeIndex,
-                                           baseVisualShapeIndex=visualShapeIndex,
-                                           basePosition=basePosition,
-                                           baseOrientation=pybullet.getQuaternionFromEuler(baseRPY))
+                                                       baseCollisionShapeIndex=collisionShapeIndex,
+                                                       baseVisualShapeIndex=visualShapeIndex,
+                                                       basePosition=basePosition,
+                                                       baseOrientation=pybullet.getQuaternionFromEuler(baseRPY))
 
-    def resetBasePosition(self, position, quaternion=[0,0,0,1]):
+    def resetBasePosition(self, position, quaternion=[0, 0, 0, 1]):
         pybullet.resetBasePositionAndOrientation(self.objectUniqueId, position, quaternion)
 
     def remove(self):
         pybullet.removeBody(self.objectUniqueId)
+
 
 class Cylinder:
-    def __init__(self, basePosition=[0,0,1], baseRPY=[0,0,0], radius=0.1, length=1, mass=1, rgbaColor=[0.8,0.8,0.8,1], useFixedBase=False):
+    def __init__(self, basePosition=[0, 0, 1], baseRPY=[0, 0, 0], radius=0.1, length=1, mass=1,
+                 rgbaColor=[0.8, 0.8, 0.8, 1], useFixedBase=False):
         mass = 0 if useFixedBase else mass
-        collisionShapeIndex = pybullet.createCollisionShape(shapeType=pybullet.GEOM_CYLINDER, radius=radius, height=length)
-        visualShapeIndex = pybullet.createVisualShape(shapeType=pybullet.GEOM_CYLINDER, radius=radius, length=length, rgbaColor=rgbaColor)
+        collisionShapeIndex = pybullet.createCollisionShape(shapeType=pybullet.GEOM_CYLINDER, radius=radius,
+                                                            height=length)
+        visualShapeIndex = pybullet.createVisualShape(shapeType=pybullet.GEOM_CYLINDER, radius=radius, length=length,
+                                                      rgbaColor=rgbaColor)
         self.objectUniqueId = pybullet.createMultiBody(baseMass=mass,
-                                           baseCollisionShapeIndex=collisionShapeIndex,
-                                           baseVisualShapeIndex=visualShapeIndex,
-                                           basePosition=basePosition,
-                                           baseOrientation=pybullet.getQuaternionFromEuler(baseRPY))
+                                                       baseCollisionShapeIndex=collisionShapeIndex,
+                                                       baseVisualShapeIndex=visualShapeIndex,
+                                                       basePosition=basePosition,
+                                                       baseOrientation=pybullet.getQuaternionFromEuler(baseRPY))
 
-    def resetBasePosition(self, position, quaternion=[0,0,0,1]):
+    def resetBasePosition(self, position, quaternion=[0, 0, 0, 1]):
         pybullet.resetBasePositionAndOrientation(self.objectUniqueId, position, quaternion)
 
     def remove(self):
         pybullet.removeBody(self.objectUniqueId)
+
 
 class Box:
     def __init__(self):
@@ -78,18 +94,18 @@ class Box:
         self.enableFrictionAnchor()
 
     @classmethod
-    def fromParam(cls, basePosition=[0,0,1], baseRPY=[0,0,0], size=[1, 1, 1], mass=1, rgbaColor=[0.8,0.8,0.8,1], useFixedBase=False):
+    def fromParam(cls, basePosition=[0, 0, 1], baseRPY=[0, 0, 0], size=[1, 1, 1], mass=1, rgbaColor=[0.8, 0.8, 0.8, 1],
+                  useFixedBase=False):
         mass = 0 if useFixedBase else mass
         collisionShapeIndex = pybullet.createCollisionShape(shapeType=pybullet.GEOM_BOX, halfExtents=np.array(size) / 2)
         visualShapeIndex = pybullet.createVisualShape(shapeType=pybullet.GEOM_BOX, halfExtents=np.array(size) / 2,
-                                                      rgbaColor=rgbaColor,specularColor=[0.0, 0.0, 0.0])
+                                                      rgbaColor=rgbaColor, specularColor=[0.0, 0.0, 0.0])
         cls.id = pybullet.createMultiBody(baseMass=mass,
-                                           baseCollisionShapeIndex=collisionShapeIndex,
-                                           baseVisualShapeIndex=visualShapeIndex,
-                                           basePosition=basePosition,
-                                           baseOrientation=pybullet.getQuaternionFromEuler(baseRPY))
+                                          baseCollisionShapeIndex=collisionShapeIndex,
+                                          baseVisualShapeIndex=visualShapeIndex,
+                                          basePosition=basePosition,
+                                          baseOrientation=pybullet.getQuaternionFromEuler(baseRPY))
         return cls()
-
 
     @classmethod
     def fromID(cls, id):
@@ -104,14 +120,15 @@ class Box:
         baseState = pybullet.getBasePositionAndOrientation(self.id)
         return baseState[1]
 
-    def resetBasePosition(self, position, quaternion=[0,0,0,1]):
+    def resetBasePosition(self, position, quaternion=[0, 0, 0, 1]):
         pybullet.resetBasePositionAndOrientation(self.id, position, quaternion)
 
     def remove(self):
         pybullet.removeBody(self.id)
 
     def changeFriction(self, lateralFriction=1.0, spinningFriction=1.0):
-        pybullet.changeDynamics(bodyUniqueId=self.id, linkIndex=-1, lateralFriction=lateralFriction, spinningFriction=spinningFriction)
+        pybullet.changeDynamics(bodyUniqueId=self.id, linkIndex=-1, lateralFriction=lateralFriction,
+                                spinningFriction=spinningFriction)
         print("Box friction updated!")
         print("lateralFriction:", pybullet.getDynamicsInfo(self.id, -1)[1])
         print("spinningFriction:", pybullet.getDynamicsInfo(self.id, -1)[7])
@@ -119,6 +136,7 @@ class Box:
     def enableFrictionAnchor(self):
         print("Box friction anchor enabled!")
         pybullet.changeDynamics(bodyUniqueId=self.id, linkIndex=-1, frictionAnchor=True)
+
 
 class Table:
     def __init__(self, basePosition, baseRPY, useFixedBase, globalScaling=1.0):
@@ -133,11 +151,12 @@ class Table:
                                     globalScaling=globalScaling,
                                     physicsClientId=0)
 
-
     def changeFriction(self, lateralFriction=1.0, spinningFriction=1.0, rollingFriction=0.0):
         print("Current table dynamic: ", pybullet.getDynamicsInfo(self.id, -1))
-        pybullet.changeDynamics(bodyUniqueId=self.id, linkIndex=-1, lateralFriction=lateralFriction, spinningFriction=spinningFriction, rollingFriction=rollingFriction)
+        pybullet.changeDynamics(bodyUniqueId=self.id, linkIndex=-1, lateralFriction=lateralFriction,
+                                spinningFriction=spinningFriction, rollingFriction=rollingFriction)
         print("Updated table dynamic: ", pybullet.getDynamicsInfo(self.id, -1))
+
 
 class StepStone:
     def __init__(self, basePosition, baseRPY, useFixedBase=True, globalScaling=1.0):
@@ -151,11 +170,12 @@ class StepStone:
                                     globalScaling=globalScaling,
                                     physicsClientId=0)
 
-
     def changeFriction(self, lateralFriction=1.0, spinningFriction=1.0, rollingFriction=0.0):
         print("Current table dynamic: ", pybullet.getDynamicsInfo(self.id, -1))
-        pybullet.changeDynamics(bodyUniqueId=self.id, linkIndex=-1, lateralFriction=lateralFriction, spinningFriction=spinningFriction, rollingFriction=rollingFriction)
+        pybullet.changeDynamics(bodyUniqueId=self.id, linkIndex=-1, lateralFriction=lateralFriction,
+                                spinningFriction=spinningFriction, rollingFriction=rollingFriction)
         print("Updated table dynamic: ", pybullet.getDynamicsInfo(self.id, -1))
+
 
 class SimEnv:
     def __init__(self, sim_rate=1000, g=9.81, real_time_sim=True, GUI=True):
@@ -172,16 +192,13 @@ class SimEnv:
         pybullet.setTimeStep(self.sim_time_step)
         pybullet.setGravity(0, 0, -g)
 
-        self.floor = Floor(basePosition=[0,0,-0.0])
+        self.floor = Floor(basePosition=[0, 0, -0.0])
         self.floor.changeFriction(lateralFriction=1.0, spinningFriction=1.0)
-
-
 
         self.configureDebugVisualizer(COV_ENABLE_GUI=False,
                                       COV_ENABLE_RGB_BUFFER_PREVIEW=False,
                                       COV_ENABLE_DEPTH_BUFFER_PREVIEW=False,
                                       COV_ENABLE_SEGMENTATION_MARK_PREVIEW=False)
-
 
     def loadURDF(self, fileName, basePosition, baseRPY, useFixedBase, globalScaling=1.0):
         modelID = pybullet.loadURDF(fileName=fileName,
@@ -194,29 +211,30 @@ class SimEnv:
                                     physicsClientId=0)
         return modelID
 
-    def configureDebugVisualizer(self, COV_ENABLE_GUI=False, COV_ENABLE_RGB_BUFFER_PREVIEW=False, COV_ENABLE_DEPTH_BUFFER_PREVIEW=False, COV_ENABLE_SEGMENTATION_MARK_PREVIEW=False):
+    def configureDebugVisualizer(self, COV_ENABLE_GUI=False, COV_ENABLE_RGB_BUFFER_PREVIEW=False,
+                                 COV_ENABLE_DEPTH_BUFFER_PREVIEW=False, COV_ENABLE_SEGMENTATION_MARK_PREVIEW=False):
         pybullet.configureDebugVisualizer(pybullet.COV_ENABLE_GUI, COV_ENABLE_GUI)
         pybullet.configureDebugVisualizer(pybullet.COV_ENABLE_RGB_BUFFER_PREVIEW, COV_ENABLE_RGB_BUFFER_PREVIEW)
         pybullet.configureDebugVisualizer(pybullet.COV_ENABLE_DEPTH_BUFFER_PREVIEW, COV_ENABLE_DEPTH_BUFFER_PREVIEW)
-        pybullet.configureDebugVisualizer(pybullet.COV_ENABLE_SEGMENTATION_MARK_PREVIEW, COV_ENABLE_SEGMENTATION_MARK_PREVIEW)
+        pybullet.configureDebugVisualizer(pybullet.COV_ENABLE_SEGMENTATION_MARK_PREVIEW,
+                                          COV_ENABLE_SEGMENTATION_MARK_PREVIEW)
 
     def reset(self):
         pass
 
-    def resetLightPosition(self, lightPosition=[1,1,1]):
+    def resetLightPosition(self, lightPosition=[1, 1, 1]):
         pybullet.configureDebugVisualizer(pybullet.COV_ENABLE_GUI, False, lightPosition=lightPosition)
 
-    def resetShadowMapResolution(self, resolution=2**12):
+    def resetShadowMapResolution(self, resolution=2 ** 12):
         pybullet.configureDebugVisualizer(pybullet.COV_ENABLE_GUI, False, shadowMapResolution=resolution)
 
-
-    def resetCamera(self, cameraDistance=1.5, cameraYaw=45, cameraPitch=-30, cameraTargetPosition=[0,0,0.5]):
+    def resetCamera(self, cameraDistance=1.5, cameraYaw=45, cameraPitch=-30, cameraTargetPosition=[0, 0, 0.5]):
         pybullet.resetDebugVisualizerCamera(cameraDistance=cameraDistance,
                                             cameraYaw=cameraYaw,
                                             cameraPitch=cameraPitch,
                                             cameraTargetPosition=cameraTargetPosition)
 
-    def resetGUIView(self, distance=1.5, yaw=45, pitch=-30, target_position=[0,0,0.5]):
+    def resetGUIView(self, distance=1.5, yaw=45, pitch=-30, target_position=[0, 0, 0.5]):
         pybullet.resetDebugVisualizerCamera(cameraDistance=distance,
                                             cameraYaw=yaw,
                                             cameraPitch=pitch,
@@ -255,14 +273,12 @@ class SimEnv:
 
         return (x, y, 0), (0, 0, yaw)
 
-
     def step(self):
         pybullet.stepSimulation()
         if self.real_time_sim:
             time.sleep(self.sim_time_step)
         self.sim_count += 1
         self.sim_time = self.sim_count * self.sim_time_step
-
 
     def spin(self):
         while True:
@@ -273,20 +289,24 @@ class SimEnv:
         pybullet.getCameraImage(256, 256, renderer=pybullet.ER_BULLET_HARDWARE_OPENGL)
 
     @staticmethod
-    def addDebugText(text, textPosition, textColorRGB=[0,0,0], textSize=2, lifeTime=0):
-        textID = pybullet.addUserDebugText(text=text, textPosition=textPosition, textColorRGB=textColorRGB, textSize=textSize, lifeTime=lifeTime)
+    def addDebugText(text, textPosition, textColorRGB=[0, 0, 0], textSize=2, lifeTime=0):
+        textID = pybullet.addUserDebugText(text=text, textPosition=textPosition, textColorRGB=textColorRGB,
+                                           textSize=textSize, lifeTime=lifeTime)
         return textID
 
     @staticmethod
-    def addDebugPoint(point, color=[0,0,0], lineWidth=1, lifeTime=0):
-        dis, x_unit, y_unit = 0.01, np.array([1,0,0]), np.array([0,1,0])
-        line_x = pybullet.addUserDebugLine(point + dis * x_unit, point - dis * x_unit, lineColorRGB=color, lineWidth=lineWidth, lifeTime=lifeTime)
-        line_y = pybullet.addUserDebugLine(point + dis * y_unit, point - dis * y_unit, lineColorRGB=color, lineWidth=lineWidth, lifeTime=lifeTime)
+    def addDebugPoint(point, color=[0, 0, 0], lineWidth=1, lifeTime=0):
+        dis, x_unit, y_unit = 0.01, np.array([1, 0, 0]), np.array([0, 1, 0])
+        line_x = pybullet.addUserDebugLine(point + dis * x_unit, point - dis * x_unit, lineColorRGB=color,
+                                           lineWidth=lineWidth, lifeTime=lifeTime)
+        line_y = pybullet.addUserDebugLine(point + dis * y_unit, point - dis * y_unit, lineColorRGB=color,
+                                           lineWidth=lineWidth, lifeTime=lifeTime)
         return (line_x, line_y)
 
     @staticmethod
-    def addDebugLine(startPoint, endPoint, color=[0,0,0], lineWidth=1, lifeTime=0):
-        return pybullet.addUserDebugLine(startPoint, endPoint, lineColorRGB=color, lineWidth=lineWidth, lifeTime=lifeTime)
+    def addDebugLine(startPoint, endPoint, color=[0, 0, 0], lineWidth=1, lifeTime=0):
+        return pybullet.addUserDebugLine(startPoint, endPoint, lineColorRGB=color, lineWidth=lineWidth,
+                                         lifeTime=lifeTime)
 
     @staticmethod
     def addDebugFrame(origin, quaternion, axisLength=0.2, lineWidth=1, lifeTime=0):
@@ -301,41 +321,45 @@ class SimEnv:
         return [x_axis, y_axis, z_axis]
 
     @staticmethod
-    def addDebugRectangle(position, quaternion=[0,0,0,1], length=0.2, width=0.1, color=[0,0,0], lineWidth=1, lifeTime=0):
-        point1, quaternion1 = pybullet.multiplyTransforms(position, quaternion, [+length / 2, +width / 2, 0], [0, 0, 0, 1])
-        point2, quaternion2 = pybullet.multiplyTransforms(position, quaternion, [-length / 2, +width / 2, 0], [0, 0, 0, 1])
-        point3, quaternion3 = pybullet.multiplyTransforms(position, quaternion, [-length / 2, -width / 2, 0], [0, 0, 0, 1])
-        point4, quaternion4 = pybullet.multiplyTransforms(position, quaternion, [+length / 2, -width / 2, 0], [0, 0, 0, 1])
+    def addDebugRectangle(position, quaternion=[0, 0, 0, 1], length=0.2, width=0.1, color=[0, 0, 0], lineWidth=1,
+                          lifeTime=0):
+        point1, quaternion1 = pybullet.multiplyTransforms(position, quaternion, [+length / 2, +width / 2, 0],
+                                                          [0, 0, 0, 1])
+        point2, quaternion2 = pybullet.multiplyTransforms(position, quaternion, [-length / 2, +width / 2, 0],
+                                                          [0, 0, 0, 1])
+        point3, quaternion3 = pybullet.multiplyTransforms(position, quaternion, [-length / 2, -width / 2, 0],
+                                                          [0, 0, 0, 1])
+        point4, quaternion4 = pybullet.multiplyTransforms(position, quaternion, [+length / 2, -width / 2, 0],
+                                                          [0, 0, 0, 1])
         line1 = SimEnv.addDebugLine(point1, point2, color, lineWidth, lifeTime)
         line2 = SimEnv.addDebugLine(point2, point3, color, lineWidth, lifeTime)
         line3 = SimEnv.addDebugLine(point3, point4, color, lineWidth, lifeTime)
         line4 = SimEnv.addDebugLine(point4, point1, color, lineWidth, lifeTime)
         return [line1, line2, line3, line4]
 
-
     @staticmethod
-    def addDebugTrajectory(X, Y, Z, color=[0,0,0], lineWidth=1, lifeTime=0):
+    def addDebugTrajectory(X, Y, Z, color=[0, 0, 0], lineWidth=1, lifeTime=0):
         trajectoryId = []
-        for i in range(len(X)-1):
+        for i in range(len(X) - 1):
             pointFrom = [X[i], Y[i], Z[i]]
-            pointTo = [X[i+1], Y[i+1], Z[i+1]]
-            lineId = pybullet.addUserDebugLine(pointFrom, pointTo, lineColorRGB=color, lineWidth=lineWidth, lifeTime=lifeTime)
+            pointTo = [X[i + 1], Y[i + 1], Z[i + 1]]
+            lineId = pybullet.addUserDebugLine(pointFrom, pointTo, lineColorRGB=color, lineWidth=lineWidth,
+                                               lifeTime=lifeTime)
             trajectoryId.append(lineId)
         return trajectoryId
 
     @staticmethod
-    def addDebugTrajectory3D(XYZ, color=[0,0,0], lineWidth=1, lifeTime=0):
+    def addDebugTrajectory3D(XYZ, color=[0, 0, 0], lineWidth=1, lifeTime=0):
         if XYZ.shape[0] != 3:
             XYZ = XYZ.T
         X, Y, Z = XYZ[0], XYZ[1], XYZ[2]
-        return SimEnv.addDebugTrajectory(X,Y,Z, color=color, lineWidth=lineWidth, lifeTime=lifeTime)
+        return SimEnv.addDebugTrajectory(X, Y, Z, color=color, lineWidth=lineWidth, lifeTime=lifeTime)
 
-    def addDebugTrajectory2D(XYZ, color=[0,0,0], lineWidth=1, lifeTime=0):
+    def addDebugTrajectory2D(XYZ, color=[0, 0, 0], lineWidth=1, lifeTime=0):
         if XYZ.shape[0] != 3:
             XYZ = XYZ.T
-        X, Y, Z = XYZ[0], XYZ[1], XYZ[2]*0.0
-        return SimEnv.addDebugTrajectory(X,Y,Z, color=color, lineWidth=lineWidth, lifeTime=lifeTime)
-
+        X, Y, Z = XYZ[0], XYZ[1], XYZ[2] * 0.0
+        return SimEnv.addDebugTrajectory(X, Y, Z, color=color, lineWidth=lineWidth, lifeTime=lifeTime)
 
     @staticmethod
     def removeDebugItems(*args):
@@ -354,15 +378,20 @@ class SimEnv:
                     for item in arg:
                         SimEnv.removeDebugItems(item)
 
+
 class SimRobot:
-    def __init__(self, verbose=True):
+    def __init__(self, verbose, urdf_path=None, config_path=None, from_id=False, id=None):
+        if urdf_path is not None:
+            if from_id:
+                self.loadFromID(id, config_path)
+            else:
+                self.loadFromURDF(urdf_path, config_path)
 
         if verbose:
             self.showRobotInfo()
 
         # self.enableTorqueControl()
         self.enablePositionControl()
-
 
         # self.addDebugLinkFrames()
 
@@ -371,15 +400,13 @@ class SimRobot:
         # else:
         #     self.resetJointStates(jointPositions)
 
-
-
     @classmethod
-    def fromURDF(cls, urdfFileName, basePosition=[0,0,0], baseRPY=[0,0,0], useFixedBase=True, verbose=True):
+    def fromURDF(cls, urdfFileName, basePosition=[0, 0, 0], baseRPY=[0, 0, 0], useFixedBase=True, verbose=True):
         id = pybullet.loadURDF(fileName=urdfFileName,
-                                    basePosition=basePosition,
-                                    baseOrientation=pybullet.getQuaternionFromEuler(baseRPY),
-                                    useFixedBase=useFixedBase,
-                                    flags=pybullet.URDF_USE_INERTIA_FROM_FILE)
+                               basePosition=basePosition,
+                               baseOrientation=pybullet.getQuaternionFromEuler(baseRPY),
+                               useFixedBase=useFixedBase,
+                               flags=pybullet.URDF_USE_INERTIA_FROM_FILE)
         cls.id = id
         return cls(verbose=verbose)
 
@@ -403,20 +430,18 @@ class SimRobot:
         cls.config = config
         return cls(verbose=verbose)
 
+    def loadFromURDF(self, urdf_path, config_path, verbose=True):
+        self.config = self.loadYaml(config_path)
+        self.id = pybullet.loadURDF(fileName=urdf_path,
+                                    basePosition=self.config['base_position'],
+                                    baseOrientation=pybullet.getQuaternionFromEuler(self.config['base_rpy']),
+                                    useFixedBase=self.config['fixed_base'])
+        # flags=pybullet.URDF_USE_INERTIA_FROM_FILE)
+
+        # return cls(verbose=verbose)
 
     @classmethod
-    def loadFromURDF(cls, urdf_path, config_path, verbose=True):
-        cls.config = cls.loadYaml(config_path)
-        cls.id = pybullet.loadURDF(fileName=urdf_path,
-                                    basePosition=cls.config['base_position'],
-                                    baseOrientation=pybullet.getQuaternionFromEuler(cls.config['base_rpy']),
-                                    useFixedBase=cls.config['fixed_base'],
-                                    flags=pybullet.URDF_USE_INERTIA_FROM_FILE)
-
-        return cls(verbose=verbose)
-
-    @classmethod
-    def loadFromID(cls, id, config_path, verbose=True):
+    def loadFromID(cls, id, config_path, verbose=False):
         cls.config = cls.loadYaml(config_path)
         cls.id = id
         return cls(verbose=verbose)
@@ -427,7 +452,6 @@ class SimRobot:
         with open(yaml_path, 'r') as stream:
             data = yaml.safe_load(stream)
         return data
-
 
     def showRobotInfo(self):
         print('*' * 100 + '\nPyBullet Robot Info ' + '\n' + '*' * 100)
@@ -450,7 +474,8 @@ class SimRobot:
     def resetJointStates(self, jointPositions, jointVelocities=None):
         if jointVelocities is None:
             jointVelocities = np.zeros(self.getNumActuatedJoints())
-        for jointIndex, jointPosition, jointVelocity in zip(self.getActuatedJointIndexes(), jointPositions, jointVelocities):
+        for jointIndex, jointPosition, jointVelocity in zip(self.getActuatedJointIndexes(), jointPositions,
+                                                            jointVelocities):
             pybullet.resetJointState(self.id, jointIndex, jointPosition, jointVelocity)
 
     def enablePositionControl(self):
@@ -459,15 +484,15 @@ class SimRobot:
                                            range(self.getNumJoints()),
                                            pybullet.POSITION_CONTROL,
                                            targetPositions=self.getJointPositions(),
-                                           forces=self.maxForce*np.ones(self.getNumJoints()))
-        self.controlMode = 'positionContwrol'
+                                           forces=self.maxForce * np.ones(self.getNumJoints()))
+        self.controlMode = 'positionControl'
         print(self.controlMode, 'enabled!')
 
     def enableTorqueControl(self):
         pybullet.setJointMotorControlArray(self.id,
                                            self.getJointIndexes(),
                                            pybullet.VELOCITY_CONTROL,
-                                           forces=[0.0]*self.getNumJoints())
+                                           forces=[0.0] * self.getNumJoints())
         self.controlMode = 'torqueControl'
         print(self.controlMode, 'enabled!')
 
@@ -609,7 +634,6 @@ class SimRobot:
             joint_frictions.append(self.getJointFriction(i))
         return joint_frictions
 
-
     def getJointLowerLimit(self, jointIndex):
         return pybullet.getJointInfo(self.id, jointIndex)[8]
 
@@ -642,7 +666,8 @@ class SimRobot:
 
     def getLinkState(self, linkName):
         linkIndex = self.getLinkIndex(linkName=linkName)
-        linkState = pybullet.getLinkState(bodyUniqueId=self.id, linkIndex=linkIndex, computeLinkVelocity=True, computeForwardKinematics=True)
+        linkState = pybullet.getLinkState(bodyUniqueId=self.id, linkIndex=linkIndex, computeLinkVelocity=True,
+                                          computeForwardKinematics=True)
         return linkState
 
     def getLinkPosition(self, linkName):
@@ -660,7 +685,7 @@ class SimRobot:
     def getLinkRotation(self, linkName):
         quat = self.getLinkQuaternion(linkName)
         rot = pybullet.getMatrixFromQuaternion(quat)
-        return np.reshape(rot,(3,3))
+        return np.reshape(rot, (3, 3))
 
     def getLinkEuler(self, linkName):
         quat = self.getLinkQuaternion(linkName)
@@ -679,45 +704,51 @@ class SimRobot:
         lowerLimits = np.array(self.getJointLowerLimits())
         upperLimits = np.array(self.getJointUpperLimits())
         jointRanges = upperLimits - lowerLimits
-        restPoses = (lowerLimits + upperLimits)/2.0
+        restPoses = (lowerLimits + upperLimits) / 2.0
         restPoses = self.getActuatedJointPositions()
         # print('lower:', self.getJointLowerLimits())
         # print('upper:', self.getJointUpperLimits())
         # print('range:', jointRanges)
         # print('restPoses:', restPoses)
-        jointPositions = pybullet.calculateInverseKinematics(self.id, self.getLinkIndex(linkName), position, quaternion, maxNumIterations=100)
+        jointPositions = pybullet.calculateInverseKinematics(self.id, self.getLinkIndex(linkName), position, quaternion,
+                                                             maxNumIterations=100)
         return jointPositions
-
 
     # Set control commands
     def setJointPositions(self, jointNamePositionDict):
         for jointName, jointPosition in jointNamePositionDict.items():
-            pybullet.setJointMotorControl2(self.id, self.getJointIndex(jointName), pybullet.POSITION_CONTROL, targetPosition=jointPosition)
+            pybullet.setJointMotorControl2(self.id, self.getJointIndex(jointName), pybullet.POSITION_CONTROL,
+                                           targetPosition=jointPosition)
 
     def setJointPositionsWithPDGains(self, jointNamePositionDict, PGain=0.001, DGain=0.01):
         for jointName, jointPosition in jointNamePositionDict.items():
-            pybullet.setJointMotorControl2(self.id, self.getJointIndex(jointName), pybullet.POSITION_CONTROL, targetPosition=jointPosition, positionGain=PGain, velocityGain=DGain)
+            pybullet.setJointMotorControl2(self.id, self.getJointIndex(jointName), pybullet.POSITION_CONTROL,
+                                           targetPosition=jointPosition, positionGain=PGain, velocityGain=DGain)
 
     def setJointPositionsWithForceLimit(self, jointStateDict):
         for joint_tuple in jointStateDict.items():
             jointName, joint_dict = joint_tuple
             max_force = joint_dict['max_force']
             jointPosition = joint_dict['joint_target']
-            pybullet.setJointMotorControl2(self.id, self.getJointIndex(jointName), pybullet.POSITION_CONTROL, targetPosition=jointPosition, force=max_force)
-
+            pybullet.setJointMotorControl2(self.id, self.getJointIndex(jointName), pybullet.POSITION_CONTROL,
+                                           targetPosition=jointPosition, force=max_force)
 
     def setActuatedJointPositions(self, jointPositions):
         if isinstance(jointPositions, dict):
             actuatedJointPositions = [jointPositions[jointName] for jointName in self.getActuatedJointNames()]
-            pybullet.setJointMotorControlArray(self.id, self.getActuatedJointIndexes(), pybullet.POSITION_CONTROL, targetPositions=actuatedJointPositions)
-        elif isinstance(jointPositions, np.ndarray) or isinstance(jointPositions, list) or isinstance(jointPositions, tuple):
-            pybullet.setJointMotorControlArray(self.id, self.getActuatedJointIndexes(), pybullet.POSITION_CONTROL, targetPositions=jointPositions)
+            pybullet.setJointMotorControlArray(self.id, self.getActuatedJointIndexes(), pybullet.POSITION_CONTROL,
+                                               targetPositions=actuatedJointPositions)
+        elif isinstance(jointPositions, np.ndarray) or isinstance(jointPositions, list) or isinstance(jointPositions,
+                                                                                                      tuple):
+            pybullet.setJointMotorControlArray(self.id, self.getActuatedJointIndexes(), pybullet.POSITION_CONTROL,
+                                               targetPositions=jointPositions)
 
     def getJointConfig(self):
         jointPositions = np.array([state[0] for state in pybullet.getJointStates(self.id, self.getJointIndexes())])
         return dict(zip(self.getJointNames(), jointPositions))
 
     def getJointPositions(self):
+        # pdb.set_trace()
         jointPositions = np.array([state[0] for state in pybullet.getJointStates(self.id, self.getJointIndexes())])
         return jointPositions
 
@@ -730,7 +761,8 @@ class SimRobot:
         return dict(zip(self.getActuatedJointNames(), actuatedJointPositions))
 
     def getActuatedJointPositions(self):
-        actuatedJointPositions = np.array([state[0] for state in pybullet.getJointStates(self.id, self.getActuatedJointIndexes())])
+        actuatedJointPositions = np.array(
+            [state[0] for state in pybullet.getJointStates(self.id, self.getActuatedJointIndexes())])
         return actuatedJointPositions
 
     def getActuatedJointNameVelocities(self):
@@ -738,12 +770,23 @@ class SimRobot:
         return dict(zip(self.getActuatedJointNames(), actuatedJointVelocities))
 
     def getActuatedJointVelocities(self):
-        actuatedJointVelocities = np.array([state[1] for state in pybullet.getJointStates(self.id, self.getActuatedJointIndexes())])
+        actuatedJointVelocities = np.array(
+            [state[1] for state in pybullet.getJointStates(self.id, self.getActuatedJointIndexes())])
         return actuatedJointVelocities
 
+
 class Manipulator(SimRobot):
-    def __init__(self, verbose):
-        SimRobot.__init__(self, verbose)
+    def __init__(self, verbose, urdf_path=None, config_path=None, from_id=False, id=None):
+        if from_id:
+            self.loadFromID(id, config_path)
+
+        SimRobot.__init__(self, verbose, urdf_path, config_path, from_id, id)
+
+        # if urdf_path is not None:
+        #     if from_id:
+        #         self.loadFromID(id, config_path)
+        #     else:
+        #         self.loadFromURDF(urdf_path, config_path)
 
         self.dt = 0.001
         self.arm_joint_names = self.config['arm_joint_names']
@@ -756,7 +799,8 @@ class Manipulator(SimRobot):
         self.arm_home_config = self.config['arm_home_config']
         self.gripper_home_config = self.config['gripper_home_config']
         self.arm_home_joint_positions = [self.arm_home_config[joint_name] for joint_name in self.arm_joint_names]
-        self.gripper_home_joint_positions = [self.gripper_home_config[joint_name] for joint_name in self.gripper_joint_names]
+        self.gripper_home_joint_positions = [self.gripper_home_config[joint_name] for joint_name in
+                                             self.gripper_joint_names]
         self.home_joint_positions = self.arm_home_joint_positions + self.gripper_home_joint_positions
 
         self.tf_broadcaster_initialized = False
@@ -765,10 +809,24 @@ class Manipulator(SimRobot):
 
         # self.realsense = Camera()
 
-    def changeGripperDynamics(self, lateralFriction=1.0, spinningFriction=1.0,  rollingFriction=0.1, frictionAnchor=True):
+    # @classmethod
+    # def loadFromID(cls, id, config_path, verbose=False):
+    #     cls.config = cls.loadYaml(config_path)
+    #     cls.id = id
+    #     return cls(verbose=verbose)
+
+    def loadFromID(self, id, config_path, verbose=False):
+        self.config = self.loadYaml(config_path)
+        self.id = id
+
+
+    def changeGripperDynamics(self, lateralFriction=1.0, spinningFriction=1.0, rollingFriction=0.1,
+                              frictionAnchor=True):
         for gripper_link_name in self.gripper_link_names:
             print(gripper_link_name + " friction updated!")
-            pybullet.changeDynamics(bodyUniqueId=self.id, linkIndex=self.getLinkIndex(gripper_link_name), lateralFriction=lateralFriction, spinningFriction=spinningFriction, rollingFriction=rollingFriction,  frictionAnchor=frictionAnchor)
+            pybullet.changeDynamics(bodyUniqueId=self.id, linkIndex=self.getLinkIndex(gripper_link_name),
+                                    lateralFriction=lateralFriction, spinningFriction=spinningFriction,
+                                    rollingFriction=rollingFriction, frictionAnchor=frictionAnchor)
 
     def getMoveJointNames(self):
         return self.gripper_joint_names + self.arm_joint_names
@@ -790,12 +848,14 @@ class Manipulator(SimRobot):
 
     def getMoveJointPositions(self):
         actuated_joint_name_positions = self.getActuatedJointNamePositions()
-        move_joint_positions = [actuated_joint_name_positions[joint_name] for joint_name in (self.gripper_joint_names + self.arm_joint_names)]
+        move_joint_positions = [actuated_joint_name_positions[joint_name] for joint_name in
+                                (self.gripper_joint_names + self.arm_joint_names)]
         return move_joint_positions
 
     def getMoveJointVelocities(self):
         actuated_joint_name_velocities = self.getActuatedJointNameVelocities()
-        move_joint_velocities = [actuated_joint_name_velocities[joint_name] for joint_name in (self.gripper_joint_names + self.arm_joint_names)]
+        move_joint_velocities = [actuated_joint_name_velocities[joint_name] for joint_name in
+                                 (self.gripper_joint_names + self.arm_joint_names)]
         return move_joint_velocities
 
     def getArmJointStateMsg(self):
@@ -813,7 +873,8 @@ class Manipulator(SimRobot):
         # CubicSpline
         # jointTrajectory = CubicSpline(x=np.array(times), y=np.array(values), axis=0, bc_type=((1, np.zeros_like(values[0])), (1, np.zeros_like(values[-1]))))
         # # inter1d
-        jointTrajectory = interp1d(x=np.array(times), y=np.array(values), axis=0, fill_value=(values[0], values[-1]), bounds_error=False)
+        jointTrajectory = interp1d(x=np.array(times), y=np.array(values), axis=0, fill_value=(values[0], values[-1]),
+                                   bounds_error=False)
         return jointTrajectory
 
     def get_current_joint_position(self):
@@ -834,10 +895,10 @@ class Manipulator(SimRobot):
     def goHome(self, T=1.0):
         current_pos = self.get_current_arm_joint_position()
         desired_pos = self.arm_home_joint_positions
-        joint_trajectory = self.generateJointTrajectory(times=[0,T], values=[current_pos, desired_pos])
+        joint_trajectory = self.generateJointTrajectory(times=[0, T], values=[current_pos, desired_pos])
         for t in np.arange(0, T, self.dt):
             q = joint_trajectory(t)
-            self.setJointPositions(dict(zip(self.arm_joint_names,q)))
+            self.setJointPositions(dict(zip(self.arm_joint_names, q)))
             time.sleep(self.dt)
 
     def goZero(self, T=1.0):
@@ -846,7 +907,7 @@ class Manipulator(SimRobot):
         joint_trajectory = self.generateJointTrajectory(times=[0, T], values=[current_pos, desired_pos])
         for t in np.arange(0, T, self.dt):
             q = joint_trajectory(t)
-            self.setJointPositions(dict(zip(self.arm_joint_names,q)))
+            self.setJointPositions(dict(zip(self.arm_joint_names, q)))
             time.sleep(self.dt)
 
     def gotoArmJointConfig(self, desired_position, T=1.0):
@@ -855,7 +916,7 @@ class Manipulator(SimRobot):
         joint_trajectory = self.generateJointTrajectory(times=[0, T], values=[current_pos, desired_pos])
         for t in np.arange(0, T, self.dt):
             q = joint_trajectory(t)
-            self.setJointPositions(dict(zip(self.arm_joint_names,q)))
+            self.setJointPositions(dict(zip(self.arm_joint_names, q)))
             time.sleep(self.dt)
 
     def executeArmJointTrajectory(self, trajectory):
@@ -866,30 +927,29 @@ class Manipulator(SimRobot):
             vel.append(point.velocities)
             acc.append(point.accelerations)
             eff.append(point.effort)
-            times.append(point.time_from_start.secs + point.time_from_start.nsecs*1e-9)
+            times.append(point.time_from_start.secs + point.time_from_start.nsecs * 1e-9)
         pos_trajectory = self.generateJointTrajectory(times=times, values=pos)
-        for t in np.arange(0, times[-1], self.dt*5):
+        for t in np.arange(0, times[-1], self.dt * 5):
             joint_state_dict = dict()
             for i in range(len(self.arm_joint_names)):
-                joint_state_dict[self.arm_joint_names[i]] = {'joint_target': pos_trajectory(t)[i], 'max_force': self.joint_max_forces[i]}
+                joint_state_dict[self.arm_joint_names[i]] = {'joint_target': pos_trajectory(t)[i],
+                                                             'max_force': self.joint_max_forces[i]}
             self.setJointPositionsWithForceLimit(joint_state_dict)
             time.sleep(self.dt)
 
-    def gotoCartesianTarget(self, position=[0.58, -0.13, 1.05], rpy=[-np.pi ,0 ,-np.pi /2], T=1.0):
+    def gotoCartesianTarget(self, position=[0.58, -0.13, 1.05], rpy=[-np.pi, 0, -np.pi / 2], T=1.0):
         jointPositions = self.calculateInverseKinematics(linkName=self.tool_frame_name,
-                                                          position=position,
-                                                          quaternion=pybullet.getQuaternionFromEuler(rpy))
+                                                         position=position,
+                                                         quaternion=pybullet.getQuaternionFromEuler(rpy))
         armJointPositions = jointPositions[:self.getArmJointNum()]
         self.gotoArmJointConfig(armJointPositions, T=T)
 
-
-    def gotoCartesianTarget2(self, position=[0.58, -0.13, 1.05], quaternion=[0,0,0,1], T=1.0):
+    def gotoCartesianTarget2(self, position=[0.58, -0.13, 1.05], quaternion=[0, 0, 0, 1], T=1.0):
         jointPositions = self.calculateInverseKinematics(linkName=self.tool_frame_name,
-                                                          position=position,
-                                                          quaternion=quaternion)
+                                                         position=position,
+                                                         quaternion=quaternion)
         armJointPositions = jointPositions[:self.getArmJointNum()]
         self.gotoArmJointConfig(armJointPositions, T=T)
-
 
     def printTool0Pose(self):
         print('tcp pos:', self.getLinkPosition(self.tool_frame_name))
@@ -902,7 +962,8 @@ class Manipulator(SimRobot):
         return self.getLinkOrientation(self.tool_frame_name)
 
     def robotiq85GripperIK(self, gripper_opening_length):
-        gripper_main_control_joint_angle = 0.715 - np.math.asin((gripper_opening_length - 0.010) / 0.1143)  # angle calculation
+        gripper_main_control_joint_angle = 0.715 - np.math.asin(
+            (gripper_opening_length - 0.010) / 0.1143)  # angle calculation
         gripper_main_control_joint_name = "robotiq_85_left_knuckle_joint"
         mimic_joint_names = ["robotiq_85_right_knuckle_joint",
                              "robotiq_85_left_inner_knuckle_joint",
@@ -919,11 +980,11 @@ class Manipulator(SimRobot):
 
     def robotiq85GripperFK(self, gripper_joint_pos):
         gripper_main_control_joint_angle = gripper_joint_pos[0]
-        gripper_opening_length = 0.1143*np.math.sin(0.715-gripper_main_control_joint_angle) + 0.010
+        gripper_opening_length = 0.1143 * np.math.sin(0.715 - gripper_main_control_joint_angle) + 0.010
         return gripper_opening_length
 
     def pandaGripperIK(self, gripper_opening_length):
-        gripper_joint_pos = [gripper_opening_length/2, gripper_opening_length/2]
+        gripper_joint_pos = [gripper_opening_length / 2, gripper_opening_length / 2]
         return gripper_joint_pos
 
     def pandaGripperFK(self, gripper_joint_pos):
@@ -953,31 +1014,36 @@ class Manipulator(SimRobot):
     def broadcast_tfs(self):
         import rospy
         import tf
-        if self.tf_broadcaster_initialized==False:
+        if self.tf_broadcaster_initialized == False:
             self.tf_broadcaster = tf.TransformBroadcaster()
             self.tf_broadcaster_initialized = True
-            print ('tf_broadcaster_initialized!')
+            print('tf_broadcaster_initialized!')
         else:
             for i in range(self.getNumJoints()):
                 current_link_name = self.getLinkName(i)
                 parent_link_name = self.getParentLinkName(i)
                 if parent_link_name == 'panda_link0':
-                    tf_pre = np.dot(tf.transformations.translation_matrix(self.getBasePosition()), tf.transformations.quaternion_matrix(self.getBaseOrientation()))
+                    tf_pre = np.dot(tf.transformations.translation_matrix(self.getBasePosition()),
+                                    tf.transformations.quaternion_matrix(self.getBaseOrientation()))
                 else:
-                    tf_pre = np.dot(tf.transformations.translation_matrix(self.getLinkPosition(parent_link_name)), tf.transformations.quaternion_matrix(self.getLinkOrientation(parent_link_name)))
-                tf_cur = np.dot(tf.transformations.translation_matrix(self.getLinkPosition(current_link_name)), tf.transformations.quaternion_matrix(self.getLinkOrientation(current_link_name)))
-                pre_tf_cur = np.dot(np.linalg.inv(tf_pre),tf_cur)
+                    tf_pre = np.dot(tf.transformations.translation_matrix(self.getLinkPosition(parent_link_name)),
+                                    tf.transformations.quaternion_matrix(self.getLinkOrientation(parent_link_name)))
+                tf_cur = np.dot(tf.transformations.translation_matrix(self.getLinkPosition(current_link_name)),
+                                tf.transformations.quaternion_matrix(self.getLinkOrientation(current_link_name)))
+                pre_tf_cur = np.dot(np.linalg.inv(tf_pre), tf_cur)
                 self.tf_broadcaster.sendTransform(translation=tf.transformations.translation_from_matrix(pre_tf_cur),
-                                                 rotation=tf.transformations.quaternion_from_matrix(pre_tf_cur),
-                                                 time=rospy.Time.now(),
-                                                 child=current_link_name,
-                                                 parent=parent_link_name)
+                                                  rotation=tf.transformations.quaternion_from_matrix(pre_tf_cur),
+                                                  time=rospy.Time.now(),
+                                                  child=current_link_name,
+                                                  parent=parent_link_name)
+
 
 class Panda(Manipulator):
     pass
 
+
 class Camera:
-    def __init__(self, name, width=1280, height=720, nearVal = 0.01, farVal = 3.0, camera_focus_distance = 0.1, fov = 43.6):
+    def __init__(self, name, width=1280, height=720, nearVal=0.01, farVal=3.0, camera_focus_distance=0.1, fov=43.6):
         self.name = name
         self.width = width
         self.height = height
@@ -1001,13 +1067,17 @@ class Camera:
     def init_ros_publiser(self):
         import rospy
         from sensor_msgs.msg import CameraInfo, Image, PointCloud2
-        self.color_camera_info_publisher = rospy.Publisher('/' + self.name + '/color/camera_info', CameraInfo, queue_size=10)
+        self.color_camera_info_publisher = rospy.Publisher('/' + self.name + '/color/camera_info', CameraInfo,
+                                                           queue_size=10)
         if self.name == 'realsense':
             self.color_image_raw_publisher = rospy.Publisher('/' + self.name + '/color/image_raw', Image, queue_size=10)
-            self.depth_image_raw_publisher = rospy.Publisher('/' + self.name + '/aligned_depth_to_color/image_raw', Image, queue_size=10)
+            self.depth_image_raw_publisher = rospy.Publisher('/' + self.name + '/aligned_depth_to_color/image_raw',
+                                                             Image, queue_size=10)
         elif self.name == 'kinect':
-            self.color_image_raw_publisher = rospy.Publisher('/' + self.name + '/color/image_rect_color', Image, queue_size=10)
-            self.depth_image_raw_publisher = rospy.Publisher('/' + self.name + '/depth_to_color/image_raw', Image, queue_size=10)
+            self.color_image_raw_publisher = rospy.Publisher('/' + self.name + '/color/image_rect_color', Image,
+                                                             queue_size=10)
+            self.depth_image_raw_publisher = rospy.Publisher('/' + self.name + '/depth_to_color/image_raw', Image,
+                                                             queue_size=10)
         self.point_cloud_raw_publisher = rospy.Publisher('/' + self.name + '/depth/points', PointCloud2, queue_size=10)
 
     def ros_publish_image(self):
@@ -1016,12 +1086,12 @@ class Camera:
         self.depth_image_raw_publisher.publish(self.getCameraDepthImageRawMsg())
         self.point_cloud_raw_publisher.publish(self.getCameraPointCloudRawMsg())
 
-    def loadURDF(self, urdfFileName, basePosition=[0,0,0], baseRPY=[0,0,0], useFixedBase=True, verbose=True):
+    def loadURDF(self, urdfFileName, basePosition=[0, 0, 0], baseRPY=[0, 0, 0], useFixedBase=True, verbose=True):
         id = pybullet.loadURDF(fileName=urdfFileName,
-                                    basePosition=basePosition,
-                                    baseOrientation=pybullet.getQuaternionFromEuler(baseRPY),
-                                    useFixedBase=useFixedBase,
-                                    flags=pybullet.URDF_USE_INERTIA_FROM_FILE)
+                               basePosition=basePosition,
+                               baseOrientation=pybullet.getQuaternionFromEuler(baseRPY),
+                               useFixedBase=useFixedBase,
+                               flags=pybullet.URDF_USE_INERTIA_FROM_FILE)
         self.id = id
         if verbose:
             self.showRobotInfo()
@@ -1044,13 +1114,15 @@ class Camera:
         cameraEyePosition = position
         cameraQuaternion = quaternion
         cameraRotationMatrix = pybullet.getMatrixFromQuaternion(cameraQuaternion)
-        cameraRotationMatrix = np.array(cameraRotationMatrix).reshape((3,3))
-        cameraTargetTransform = pybullet.multiplyTransforms(positionA=cameraEyePosition, orientationA=cameraQuaternion, positionB=[self.camera_focus_distance,0,0],orientationB=[0,0,0,1])
+        cameraRotationMatrix = np.array(cameraRotationMatrix).reshape((3, 3))
+        cameraTargetTransform = pybullet.multiplyTransforms(positionA=cameraEyePosition, orientationA=cameraQuaternion,
+                                                            positionB=[self.camera_focus_distance, 0, 0],
+                                                            orientationB=[0, 0, 0, 1])
         cameraTargetPosition = cameraTargetTransform[0]
-        cameraUpVector = cameraRotationMatrix[:,-1]
+        cameraUpVector = cameraRotationMatrix[:, -1]
         viewMatrix = pybullet.computeViewMatrix(cameraEyePosition=cameraEyePosition,
-                                                    cameraTargetPosition=cameraTargetPosition,
-                                                    cameraUpVector=cameraUpVector)
+                                                cameraTargetPosition=cameraTargetPosition,
+                                                cameraUpVector=cameraUpVector)
         return viewMatrix
 
     def calProjectionMatrix(self):
@@ -1058,17 +1130,18 @@ class Camera:
         return projectionMatrix
 
     def calIntrinsicMatrix(self):
-        f = math.sqrt(self.width * self.width / 4.0 + self.height * self.height / 4.0) / 2.0 / math.tan(self.fov / 2.0 / 180.0 * math.pi)
+        f = math.sqrt(self.width * self.width / 4.0 + self.height * self.height / 4.0) / 2.0 / math.tan(
+            self.fov / 2.0 / 180.0 * math.pi)
         return (f, 0.0, self.width / 2.0 - 0.5, 0.0, f, self.height / 2.0 - 0.5, 0.0, 0.0, 1.0)
 
     def getCameraImage(self, position, quaternion):
         self.viewMatrix = self.calViewMatrix(position=position, quaternion=quaternion)
         width, height, rgbPixels, depthPixels, segmentationMaskBuffer = pybullet.getCameraImage(width=self.width,
-                                                                        height=self.height,
-                                                                        viewMatrix=self.viewMatrix,
-                                                                        projectionMatrix=self.projectionMatrix,
-                                                                        renderer=pybullet.ER_BULLET_HARDWARE_OPENGL,
-                                                                        flags=pybullet.ER_NO_SEGMENTATION_MASK)
+                                                                                                height=self.height,
+                                                                                                viewMatrix=self.viewMatrix,
+                                                                                                projectionMatrix=self.projectionMatrix,
+                                                                                                renderer=pybullet.ER_BULLET_HARDWARE_OPENGL,
+                                                                                                flags=pybullet.ER_NO_SEGMENTATION_MASK)
         return (width, height, rgbPixels, depthPixels, segmentationMaskBuffer)
 
     def updateCameraImage(self, position, quaternion):
@@ -1141,9 +1214,9 @@ class Camera:
         C = C.view("uint32")
         C = C.view("float32")
         pointsColor = np.zeros((points.shape[0], 1), \
-        dtype={
-            "names": ( "x", "y", "z", "rgba" ),
-            "formats": ( "f4", "f4", "f4", "f4" )} )
+                               dtype={
+                                   "names": ("x", "y", "z", "rgba"),
+                                   "formats": ("f4", "f4", "f4", "f4")})
 
         points = points.astype(np.float32)
 
@@ -1166,7 +1239,7 @@ class Camera:
             PointField('x', 0, PointField.FLOAT32, 1),
             PointField('y', 4, PointField.FLOAT32, 1),
             PointField('z', 8, PointField.FLOAT32, 1),
-            PointField('rgb',12, PointField.FLOAT32, 1)]
+            PointField('rgb', 12, PointField.FLOAT32, 1)]
         msg.is_bigendian = False
         msg.point_step = 16
         msg.row_step = msg.point_step * points.shape[0]
@@ -1191,8 +1264,8 @@ class Camera:
         depths = self.farVal * self.nearVal / (self.farVal - (self.farVal - self.nearVal) * self.depthPixels)
         colors = cv2.cvtColor(np.uint8(self.rgbPixels), code=cv2.COLOR_RGBA2RGB)
 
-        fx, fy = intrinsics[0,0], intrinsics[1,1]
-        cx, cy = intrinsics[0,2], intrinsics[1,2]
+        fx, fy = intrinsics[0, 0], intrinsics[1, 1]
+        cx, cy = intrinsics[0, 2], intrinsics[1, 2]
 
         xmap, ymap = np.arange(colors.shape[1]), np.arange(colors.shape[0])
         xmap, ymap = np.meshgrid(xmap, ymap)
@@ -1207,11 +1280,11 @@ class Camera:
         colors = colors[mask]
         return points, colors
 
+
 if __name__ == '__main__':
     sim_env = SimEnv()
-    sim_env.resetGUIView(distance=1.3, yaw=90, pitch=-15, target_position=[0,0,0.8])
+    sim_env.resetGUIView(distance=1.3, yaw=90, pitch=-15, target_position=[0, 0, 0.8])
 
     # main loop
     while True:
         sim_env.step()
-

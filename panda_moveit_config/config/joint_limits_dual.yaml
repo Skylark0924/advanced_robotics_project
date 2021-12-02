@@ -1,0 +1,74 @@
+# joint_limits.yaml allows the dynamics properties specified in the URDF to be overwritten or augmented as needed
+# Specific joint properties can be changed with the keys [max_position, min_position, max_velocity, max_acceleration]
+# Joint limits can be turned off with [has_velocity_limits, has_acceleration_limits]
+joint_limits:
+  arm_L_joint1:
+    has_velocity_limits: true
+    max_velocity: 2.175
+    has_acceleration_limits: false
+    max_acceleration: 0
+  arm_L_joint2:
+    has_velocity_limits: true
+    max_velocity: 2.175
+    has_acceleration_limits: false
+    max_acceleration: 0
+  arm_L_joint3:
+    has_velocity_limits: true
+    max_velocity: 2.175
+    has_acceleration_limits: false
+    max_acceleration: 0
+  arm_L_joint4:
+    has_velocity_limits: true
+    max_velocity: 2.175
+    has_acceleration_limits: false
+    max_acceleration: 0
+  arm_L_joint5:
+    has_velocity_limits: true
+    max_velocity: 2.61
+    has_acceleration_limits: false
+    max_acceleration: 0
+  arm_L_joint6:
+    has_velocity_limits: true
+    max_velocity: 2.61
+    has_acceleration_limits: false
+    max_acceleration: 0
+  arm_L_joint7:
+    has_velocity_limits: true
+    max_velocity: 2.61
+    has_acceleration_limits: false
+    max_acceleration: 0
+  arm_R_joint1:
+    has_velocity_limits: true
+    max_velocity: 2.175
+    has_acceleration_limits: false
+    max_acceleration: 0
+  arm_R_joint2:
+    has_velocity_limits: true
+    max_velocity: 2.175
+    has_acceleration_limits: false
+    max_acceleration: 0
+  arm_R_joint3:
+    has_velocity_limits: true
+    max_velocity: 2.175
+    has_acceleration_limits: false
+    max_acceleration: 0
+  arm_R_joint4:
+    has_velocity_limits: true
+    max_velocity: 2.175
+    has_acceleration_limits: false
+    max_acceleration: 0
+  arm_R_joint5:
+    has_velocity_limits: true
+    max_velocity: 2.61
+    has_acceleration_limits: false
+    max_acceleration: 0
+  arm_R_joint6:
+    has_velocity_limits: true
+    max_velocity: 2.61
+    has_acceleration_limits: false
+    max_acceleration: 0
+  arm_R_joint7:
+    has_velocity_limits: true
+    max_velocity: 2.61
+    has_acceleration_limits: false
+    max_acceleration: 0

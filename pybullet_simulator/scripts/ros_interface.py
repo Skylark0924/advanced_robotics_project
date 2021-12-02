@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 # license removed for brevity
+import pdb
+
 import pybullet, os
 import os.path as path
 import numpy as np
@@ -17,8 +19,9 @@ import tf.transformations
 
 from pybullet_env import Box, SimRobot, Manipulator, Camera
 
-ROBOT_ID = 1
-BOX_ID = 2
+ROBOT_ID_1 = 1
+ROBOT_ID_2 = 2
+# BOX_ID = 2
 PYBULLET_JOINT_POS_ID = 14
 PYBULLET_JOINT_ORI_ID = 15
 
@@ -94,49 +97,59 @@ if __name__ == '__main__':
     rospack = rospkg.RosPack()
     pkg_path = rospack.get_path('pybullet_simulator')
     # get robot
-    panda_config_path = pkg_path + '/robots/franka/config/panda_arm_hand.yaml'
+    panda_config_path_1 = pkg_path + '/robots/franka/config/panda_arm_hand_1.yaml'
+    panda_config_path_2 = pkg_path + '/robots/franka/config/panda_arm_hand_2.yaml'
 
     # Wait until robot is loaded in pybullet
     robot_loaded_flag = False
     while not robot_loaded_flag:
         pybullet.disconnect()
         pybullet.connect(pybullet.SHARED_MEMORY)
-        num_robot_joint = pybullet.getNumJoints(ROBOT_ID)
-        rospy.loginfo('number of joints of {}:{}'.format(ROBOT_ID, num_robot_joint))
+        num_robot_joint = pybullet.getNumJoints(ROBOT_ID_1)
+        rospy.loginfo('\033[1;33mnumber of joints of\033[0m {}:{}'.format(ROBOT_ID_1, num_robot_joint))
         if num_robot_joint == 0:
             time.sleep(1)
             continue
-        robot = Manipulator.loadFromID(id=ROBOT_ID, config_path=panda_config_path)
+        # robot_1 = Manipulator(verbose=True, urdf_path=None, config_path=panda_config_path_1, from_id=True, id=1)
+        # robot_2 = Manipulator(verbose=True, urdf_path=None, config_path=panda_config_path_2, from_id=True, id=2)
+        robot_1 = Manipulator(verbose=False, config_path=panda_config_path_1, from_id=True, id=1)
+        robot_2 = Manipulator(verbose=False, config_path=panda_config_path_2, from_id=True, id=2)
+        # robot_1.loadFromID(id=1, config_path=panda_config_path_1)
+        # robot_2.loadFromID(id=2, config_path=panda_config_path_2)
+        # robot_1 = Manipulator.loadFromID()
+        # robot_2 = Manipulator.loadFromID(id=2, config_path=panda_config_path_1)
         robot_loaded_flag = True
+    print('\033[1;33mROS robot ID:\033[0m {}, {}'.format(robot_1.id, robot_2.id))
     rospy.loginfo('Robot loaded')
+    # pdb.set_trace()
 
     # get table
-    table = Box.fromID(id=BOX_ID)
+    # table = Box.fromID(id=BOX_ID)
 
-    # kinect
-    ##### ! The transformation is hardcoded here and it should be consistent with that in panda_arm_hand_realsense.urdf #####
-    kinect_urdf_path = pkg_path + '/robots/kinect/kinect.urdf'
-    kinect = Camera(name='kinect')
-    num_robot_joint = pybullet.getNumJoints(ROBOT_ID)
-    kinect_id = None
-    for link_id in range(num_robot_joint):
-        joint_info = pybullet.getJointInfo(ROBOT_ID, link_id)
-        if joint_info[1] == 'kinect_camera_joint':
-            kinect_id = link_id
-            break
-    if kinect_id is None:
-        raise ValueError('Cannot find kinect joint in URDF')
-    else:
-        kinect_joint_info = pybullet.getJointInfo(ROBOT_ID, kinect_id)
-        kinect_base_position = robot.getBasePosition() + np.array(kinect_joint_info[PYBULLET_JOINT_POS_ID])
-        print('kinect base position:{}'.format(kinect_base_position))
-        qx, qy, qz, qw = np.array(kinect_joint_info[PYBULLET_JOINT_ORI_ID])
-        kinect_base_rpy = quat2euler([qw, qx, qy, qz])
-        print('kinect base rpy:{}'.format(kinect_base_rpy))
-        kinect.loadURDF(kinect_urdf_path, basePosition=kinect_base_position, baseRPY=kinect_base_rpy, useFixedBase=True)
-
-    # realsense
-    realsense = Camera(name='realsense')
+    # # kinect
+    # ##### ! The transformation is hardcoded here and it should be consistent with that in panda_arm_hand_realsense.urdf #####
+    # kinect_urdf_path = pkg_path + '/robots/kinect/kinect.urdf'
+    # kinect = Camera(name='kinect')
+    # num_robot_joint = pybullet.getNumJoints(ROBOT_ID)
+    # kinect_id = None
+    # for link_id in range(num_robot_joint):
+    #     joint_info = pybullet.getJointInfo(ROBOT_ID, link_id)
+    #     if joint_info[1] == 'kinect_camera_joint':
+    #         kinect_id = link_id
+    #         break
+    # if kinect_id is None:
+    #     raise ValueError('Cannot find kinect joint in URDF')
+    # else:
+    #     kinect_joint_info = pybullet.getJointInfo(ROBOT_ID, kinect_id)
+    #     kinect_base_position = robot.getBasePosition() + np.array(kinect_joint_info[PYBULLET_JOINT_POS_ID])
+    #     print('kinect base position:{}'.format(kinect_base_position))
+    #     qx, qy, qz, qw = np.array(kinect_joint_info[PYBULLET_JOINT_ORI_ID])
+    #     kinect_base_rpy = quat2euler([qw, qx, qy, qz])
+    #     print('kinect base rpy:{}'.format(kinect_base_rpy))
+    #     kinect.loadURDF(kinect_urdf_path, basePosition=kinect_base_position, baseRPY=kinect_base_rpy, useFixedBase=True)
+    #
+    # # realsense
+    # realsense = Camera(name='realsense')
 
     # tf
     tf_broadcaster = tf.TransformBroadcaster()
@@ -144,31 +157,39 @@ if __name__ == '__main__':
     # joint state
     from sensor_msgs.msg import JointState, CameraInfo, Image
 
-    joint_state_publisher = rospy.Publisher('/joint_state_controller/joint_states', JointState, queue_size=10)
-    joint_state_publisher_1 = rospy.Publisher('/joint_states', JointState, queue_size=10)
+    joint_state_publisher_1 = rospy.Publisher('/joint_state_controller/joint_states_1', JointState, queue_size=10)
+    joint_state_publisher_1_1 = rospy.Publisher('/joint_states_1', JointState, queue_size=10)
+    joint_state_publisher_2 = rospy.Publisher('/joint_state_controller/joint_states_2', JointState, queue_size=10)
+    joint_state_publisher_2_1 = rospy.Publisher('/joint_states_2', JointState, queue_size=10)
 
-    kinect.init_ros_publiser()
-    realsense.init_ros_publiser()
+    # kinect.init_ros_publiser()
+    # realsense.init_ros_publiser()
 
     arm_control_action_server = ArmControlAction('/position_joint_trajectory_controller/follow_joint_trajectory')
     gripper_control_action_server = GripperControlAction('/franka_gripper/gripper_action')
 
     rate = rospy.Rate(5)
-    robot.showRobotInfo()
+    robot_1.showRobotInfo()
+    robot_2.showRobotInfo()
 
-    rospy.Timer(rospy.Duration(1), kinect_callback, oneshot=False)
+    # rospy.Timer(rospy.Duration(1), kinect_callback, oneshot=False)
 
     while not rospy.is_shutdown():
         # tf
-        robot.broadcast_tfs()
+        robot_1.broadcast_tfs()
+        robot_2.broadcast_tfs()
 
         # joint state
-        joint_info = robot.getArmJointStateMsg()
-        joint_state_publisher.publish(joint_info)
+        joint_info = robot_1.getArmJointStateMsg()
         joint_state_publisher_1.publish(joint_info)
+        joint_state_publisher_1_1.publish(joint_info)
+
+        joint_info_2 = robot_2.getArmJointStateMsg()
+        joint_state_publisher_2.publish(joint_info_2)
+        joint_state_publisher_2_1.publish(joint_info_2)
 
         # camera
-        realsense.updateCameraImage(robot.getRealsensePosition(), robot.getRealsenseOrientation())
-        realsense.ros_publish_image()
+        # realsense.updateCameraImage(robot.getRealsensePosition(), robot.getRealsenseOrientation())
+        # realsense.ros_publish_image()
 
         rate.sleep()

@@ -1,0 +1,51 @@
+arm_home_config:
+  panda_joint_1_1: 0
+  panda_joint_1_2: 0
+  panda_joint_1_3: 0
+  panda_joint_1_4: -1.5707963267948966
+  panda_joint_1_5: 0
+  panda_joint_1_6: 1.5707963267948966
+  panda_joint_1_7: 0.7853981633974483
+arm_joint_names:
+- panda_joint_1_1
+- panda_joint_1_2
+- panda_joint_1_3
+- panda_joint_1_4
+- panda_joint_1_5
+- panda_joint_1_6
+- panda_joint_1_7
+arm_link_names:
+- panda_link_1_1
+- panda_link_1_2
+- panda_link_1_3
+- panda_link_1_4
+- panda_link_1_5
+- panda_link_1_6
+- panda_link_1_7
+joint_max_forces:
+- 5000.0
+- 3000.0
+- 2000.0
+- 1500.0
+- 1000.0
+- 1000.0
+- 1000.0
+base_position:
+- -0.42
+- 0.25
+- 0.78
+base_rpy:
+- 0
+- 0
+- 0
+fixed_base: 1
+gripper_home_config:
+  panda_finger_joint_1_1: 0
+  panda_finger_joint_1_2: 0
+gripper_joint_names:
+- panda_finger_joint_1_1
+- panda_finger_joint_1_2
+gripper_link_names:
+- panda_leftfinger_1
+- panda_rightfinger_1
+tool_frame_name: tool
