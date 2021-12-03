@@ -38,12 +38,12 @@ Junjia Liu
 
 ## Update
 
-1. 2021.11.22 - **Some students told me that they do not have a computer with a Nvidia GPU. So, I tried to remove Nvidia's dependence from the docker file. However, I found that the Pybullet simulator is mainly rely on the OpenGL, which has to require a Nvidia driver.** 
+1. 2021.11.22 - Some students told me that they do not have a computer with a Nvidia GPU. So, I tried to remove Nvidia's dependence from the docker file. However, I found that the Pybullet simulator is mainly rely on the OpenGL, which has to require a Nvidia driver.
 
 2. 2021.11.22 - If you have any question about this project, please try to learn and use the `issues` in Github to ask your questions so that I can reply in time and let other students who encounter the same problem know the solution at the same time.
 
    ![image-20211121165337801](docs/image-20211121165337801.png)
-
+3. 2021.12.03 - According to the reactions of some students, the coordinates calculated according to the DH matrix differ from the `get_fk` result I gave. There has always been a difference of `0.42` on the x-axis. This is caused by the definition difference of the world coordinate system. In this task, the world coordinate system is defined as the center of the desktop. Thus, you can simply fix it by adding `0.42` on the x-axis of the coordinates you calculated according to the DH matrix.
 ---
 
 
