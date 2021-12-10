@@ -53,6 +53,14 @@ Junjia Liu
    ```
    self.xt, self.yt, self.zt, self.thetat, self.phit, self.psit = 0.125, 0.125, 0.5, 0, 0, 0
    ```
+   And I provide you a better initial joint angle (though you can try yourself)
+   ```
+   self.q0 = np.array([0, math.pi / 3, 0, math.pi / 6, 0, 0, 0])
+   ```
+   to
+   ```
+   self.q0 = np.array([0.88, -0.22, -0.19, -1.41, -0.645, 1.51, 0.08])
+   ```
    BTW, you are encouraged to design your own desired traj, and a video of the tracking performance is welcomed to be submitted with the code and report.
 ---
 
