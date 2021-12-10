@@ -40,7 +40,7 @@ class KineControl:
         self.num_joints = 7
         self.dsr_traj = desired_traj
 
-        self.q0 = np.array([0, math.pi / 3, 0, math.pi / 6, 0, 0, 0])
+        self.q0 = np.array([0.88, -0.22, -0.19, -1.41, -0.645, 1.51, 0.08])
         self.q_dot0 = [0, 0, 0, 0, 0, 0, 0]
 
     def fk(self, q):
