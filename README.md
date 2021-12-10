@@ -44,6 +44,16 @@ Junjia Liu
 
    ![image-20211121165337801](docs/image-20211121165337801.png)
 3. 2021.12.03 - According to the reactions of some students, the coordinates calculated according to the DH matrix differ from the `get_fk` result I gave. There has always been a difference of `0.42` on the x-axis. This is caused by the definition difference of the world coordinate system. In this task, the world coordinate system is defined as the center of the desktop. Thus, you can simply fix it by adding `0.42` on the x-axis of the coordinates you calculated according to the DH matrix.
+4. **2021.12.10 - A minor bug about the initial position of the desired trajectory is fixed, you can either simply update your codes by following [this link](https://github.com/Skylark0924/advanced_robotics_project#how-to-deal-with-the-version-update), or just change this by yourself:**\
+   Please change this in the `trajectory_tracking.py`:
+   ```
+   self.xt, self.yt, self.zt, self.thetat, self.phit, self.psit = 0, 0, 0, 0, 0, 0
+   ```
+   to
+   ```
+   self.xt, self.yt, self.zt, self.thetat, self.phit, self.psit = 0.125, 0.125, 0.5, 0, 0, 0
+   ```
+   BTW, you are encouraged to design your own desired traj, and a video of the tracking performance is welcomed to be submitted with the code and report.
 ---
 
 
