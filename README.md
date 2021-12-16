@@ -38,12 +38,30 @@ Junjia Liu
 
 ## Update
 
-1. 2021.11.22 - **Some students told me that they do not have a computer with a Nvidia GPU. So, I tried to remove Nvidia's dependence from the docker file. However, I found that the Pybullet simulator is mainly rely on the OpenGL, which has to require a Nvidia driver.** 
+1. 2021.11.22 - Some students told me that they do not have a computer with a Nvidia GPU. So, I tried to remove Nvidia's dependence from the docker file. However, I found that the Pybullet simulator is mainly rely on the OpenGL, which has to require a Nvidia driver.
 
 2. 2021.11.22 - If you have any question about this project, please try to learn and use the `issues` in Github to ask your questions so that I can reply in time and let other students who encounter the same problem know the solution at the same time.
 
    ![image-20211121165337801](docs/image-20211121165337801.png)
-
+3. 2021.12.03 - According to the reactions of some students, the coordinates calculated according to the DH matrix differ from the `get_fk` result I gave. There has always been a difference of `0.42` on the x-axis. This is caused by the definition difference of the world coordinate system. In this task, the world coordinate system is defined as the center of the desktop. Thus, you can simply fix it by adding `0.42` on the x-axis of the coordinates you calculated according to the DH matrix.
+4. **2021.12.10 - A minor bug about the initial position of the desired trajectory is fixed, you can either simply update your codes by following [this link](https://github.com/Skylark0924/advanced_robotics_project#how-to-deal-with-the-version-update), or just change this by yourself:**\
+   Please change this in the `trajectory_tracking.py`:
+   ```
+   self.xt, self.yt, self.zt, self.thetat, self.phit, self.psit = 0, 0, 0, 0, 0, 0
+   ```
+   to
+   ```
+   self.xt, self.yt, self.zt, self.thetat, self.phit, self.psit = 0.125, 0.125, 0.5, 0, 0, 0
+   ```
+   And I provide you a better initial joint angle (though you can try yourself)
+   ```
+   self.q0 = np.array([0, math.pi / 3, 0, math.pi / 6, 0, 0, 0])
+   ```
+   to
+   ```
+   self.q0 = np.array([0.88, -0.22, -0.19, -1.41, -0.645, 1.51, 0.08])
+   ```
+   BTW, you are encouraged to design your own desired traj, and a video of the tracking performance is welcomed to be submitted with the code and report.
 ---
 
 
@@ -148,19 +166,6 @@ git submodule update --init --recursive
   cd docker
   bash build.sh ocrtoc_pb_g:v1
   ```
-
-- Option 2: Pull the pre-built docker image from either of the following sources:
-
-  ```
-  docker pull registry.cn-hangzhou.aliyuncs.com/ocrtoc2021/release:2.1
-  ```
-
-  or
-
-  ```
-  docker pull registry.us-west-1.aliyuncs.com/ocrtoc2021/release:2.1
-  ```
-
   
 
 ### Start Docker
@@ -319,7 +324,7 @@ python3 trajectory_tracking.py
 
 2. If you cannot find anything in `\root\ocrtoc_ws\src`, it probably be the mistake in `tools\create_container.sh`. You need to modify the **name** and **path** in the scripts according to your own needs. 
 
-   So you need to modify `$HOME/OCRTOC_software_package:/root/ocrtoc_ws/src` -> `<your absolute path of the OCRTOC_Software_package directory>:/root/ocrtoc_ws/src`.
+   So you need to modify `$HOME/OCRTOC_software_package:/root/ocrtoc_ws/src` -> `<your absolute path of the OCRTOC_Software_package directory>:/root/ocrtoc_ws/src`. (See https://github.com/Skylark0924/advanced_robotics_project/issues/2#issuecomment-982435631 for detail)
 
 
 3. When you run `rosrun ocrtoc_common manipulator_interface_node.py` and get an error like this:
